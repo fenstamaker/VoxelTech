@@ -26,8 +26,8 @@ Commons Math (<http://commons.apache.org/math/>)
 license
 -------
 
+Licensed under the [Modified BSD License](https://github.com/fenstamaker/VoxelTech/blob/master/LICENSE).
 
-<script src="https://raw.github.com/fenstamaker/VoxelTech/master/LICENSE"> </script>
 
 
 author
