@@ -27,7 +27,7 @@ license
 -------
 
 
-<script src="https://raw.github.com/fenstamaker/VoxelTech/master/LICENSE"></script>
+<script src="https://raw.github.com/fenstamaker/VoxelTech/master/LICENSE"> </script>
 
 
 author
