@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>{{ page.title }}</title>
+
+  <style type="text/css">
+    body {
+		background: #003259;
+		margin-top: 1.0em;
+		font-family: Helvetica, Arial, FreeSans, san-serif;
+		color: #c0d0e0;
+    }
+	
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+	
+	p {
+		margin-left: 1.5em;
+	}
+	
+	ul {
+		margin-left: 1.5em;
+	}
+	
+	a {
+		font-style: italic;
+		text-decoration: none;
+		color: #A3BF3B;
+	}
+	
+	a:hover {
+		color: #fff;
+	}
+	
+  </style>
+</head>
+
+<body>
+
+  <div id="container">
+
+    <h1>{{ page.title }}</h1>
+
+
+	<h2>about</h2>	
+	<p>{{ page.description }}</p>
+	
+	<h2>download</h2>
+    <p>
+		You can download this project in either
+		<a href="https://github.com/fenstamaker/VoxelTech/zipball/master">zip</a> or
+		<a href="https://github.com/fenstamaker/VoxelTech/tarball/master">tar</a> formats.
+		<br /><br />Full source availiable at GitHub:
+		<br />
+		<ul>
+			<li><a href="https://github.com/fenstamaker/VoxelTech">https://github.com/fenstamaker/VoxelTech</a></li>
+		</ul>
+	</p>
+	
+	<h2>documentation</h2>
+	<p>{{ page.docs }} </h2>
+
+	<h2>depdendencies</h2>
+    <p>{{ page.description }}</p>
+	
+	<h2>authors</h2>
+	<p>{{ page.authors }}</p> 
+
+  </div>
+
+</body>
+</html>
