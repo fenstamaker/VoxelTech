@@ -26,12 +26,13 @@ Commons Math (<http://commons.apache.org/math/>)
 license
 -------
 
+
 <div id="code>
-Copyright (c) 2011, Gary Fenstamaker  
+Copyright (c) 2011, Gary Fenstamaker<br />  
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+modification, are permitted provided that the following conditions are met:<br />
 	* Redistributions of source code must retain the above copyright
 	  notice, this list of conditions and the following disclaimer.
 	* Redistributions in binary form must reproduce the above copyright
@@ -52,6 +53,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </div>
+
 
 author
 ------
