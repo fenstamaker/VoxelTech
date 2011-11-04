@@ -18,6 +18,10 @@
       width: 700px;
     }
 	
+	#content {
+		margin: 2.5em 0 0 1.5em;
+	}
+	
 	p {
 		margin-left: 1.5em;
 	}
@@ -45,31 +49,32 @@
 
     <h1>{{ page.title }}</h1>
 
+		<div id="content">
 
-	<h2>about</h2>	
-	<p>{{ content }}</p>
-	
-	<h2>download</h2>
-    <p>
-		You can download this project in either
-		<a href="https://github.com/fenstamaker/VoxelTech/zipball/master">zip</a> or
-		<a href="https://github.com/fenstamaker/VoxelTech/tarball/master">tar</a> formats.
-		<br /><br />Full source availiable at GitHub:
-		<br />
-		<ul>
-			<li><a href="https://github.com/fenstamaker/VoxelTech">https://github.com/fenstamaker/VoxelTech</a></li>
-		</ul>
-	</p>
-	
-	<h2>documentation</h2>
-	<p>{{ page.docs }} </h2>
+		<h2>about</h2>	
+		<p>{{ content }}</p>
+		
+		<h2>download</h2>
+		<p>
+			You can download this project in either
+			<a href="https://github.com/fenstamaker/VoxelTech/zipball/master">zip</a> or
+			<a href="https://github.com/fenstamaker/VoxelTech/tarball/master">tar</a> formats.
+			<br /><br />Full source availiable at GitHub:
+			<br />
+			<ul>
+				<li><a href="https://github.com/fenstamaker/VoxelTech">https://github.com/fenstamaker/VoxelTech</a></li>
+			</ul>
+		</p>
+		
+		<h2>documentation</h2>
+		<p>{{ page.docs }} </h2>
 
-	<h2>dependencies</h2>
-    <p>{{ page.dependencies }}</p>
-	
-	<h2>authors</h2>
-	<p>{{ page.authors }}</p> 
-
+		<h2>dependencies</h2>
+		<p>{{ page.dependencies }}</p>
+		
+		<h2>authors</h2>
+		<p>{{ page.authors }}</p> 
+	</div>
   </div>
 
 </body>
