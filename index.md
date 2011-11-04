@@ -3,8 +3,9 @@ title: VoxelTech Engine
 layout: default
 
 docs: None yet! Hopefully soon with JavaDocs.
-dependencies: "LWJGL (http://lwjgl.org/) <br /> 
-Slick-Util (http://slick.cokeandcode.com/)"
+dependencies: "LWJGL (<http://lwjgl.org/>)  
+Slick-Util (<http://slick.cokeandcode.com/>)  
+Commons Math (<http://commons.apache.org/math/>)"
 authors: Gary Fenstamaker
 ---
 
