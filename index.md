@@ -25,7 +25,7 @@ Commons Math (<http://commons.apache.org/math/>)
 
 license
 -------
-	Copyright (c) 2011, Gary Fenstamaker
+	Copyright (c) 2011, Gary Fenstamaker <br />
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
