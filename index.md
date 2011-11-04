@@ -12,6 +12,7 @@ download
 You can download this project in either [zip](https://github.com/fenstamaker/VoxelTech/zipball/master) or [tar](https://github.com/fenstamaker/VoxelTech/tarball/master) formats. 
 
 Full source and more information availiable at GitHub:  
+
  * <https://github.com/fenstamaker/VoxelTech>
 
 documentation
