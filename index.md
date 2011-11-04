@@ -26,7 +26,9 @@ Commons Math (<http://commons.apache.org/math/>)
 license
 -------
 
-<script src="http://gist-it.appspot.com/github/fenstamaker/VoxelTech/raw/master/LICENSE"></script>
+
+<script src="https://raw.github.com/fenstamaker/VoxelTech/master/LICENSE"></script>
+
 
 author
 ------
