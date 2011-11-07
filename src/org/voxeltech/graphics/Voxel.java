@@ -12,11 +12,12 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Voxel implements Renderable {
 	
+	public final static float SIZE = 0.5f;
+	
 	public Mesh mesh;
 	
-	protected Vector3f position;
+	public Vector3f position;
     protected Vector3f lastPosition;
-    protected float size;
 	
 	protected Vector3f velocity;
 	protected float acceleration;
@@ -24,6 +25,15 @@ public class Voxel implements Renderable {
     protected Color color;
     protected boolean shouldRender = true;
     protected static Texture image;
+    
+    public Voxel(float x, float y, float z) {
+		position = new Vector3f(x, y, z);
+		
+		mesh = new Mesh(position, SIZE);
+	
+		color = new Color(0f, .8f, .1f);
+    }
+
     
     public boolean hasCollidedWith(Voxel obj) {
 
@@ -57,7 +67,7 @@ public class Voxel implements Renderable {
 		m.scale(distance*acceleration);
 		lastPosition = position;
 		position = Vector3f.add(position, m, null);
-		mesh.changePosition(position, size);
+		mesh.changePosition(position, SIZE);
 		
 	}
 	

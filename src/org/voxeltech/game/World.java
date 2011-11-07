@@ -10,7 +10,10 @@ import org.voxeltech.utils.*;
 public class World {
 
 	private ProgramClock clock = ProgramClock.getInstance();
-	private ArrayList< ArrayList< ArrayList<Voxel> > > voxels;
-	
+	private ArrayList< ArrayList< ArrayList<WorldChunk> > > chunks;
+
+	public World() {
+		
+	}
 	
 }
