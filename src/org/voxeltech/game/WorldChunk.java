@@ -8,7 +8,7 @@ import org.voxeltech.noise.*;
 
 public class WorldChunk {
 	
-	private final static int SIZE = 20;
+	public final static int SIZE = 20;
 
 	private ProgramClock clock = ProgramClock.getInstance();	
 	private ArrayList< ArrayList< ArrayList<Voxel> > > terrian;
@@ -17,7 +17,7 @@ public class WorldChunk {
 	 * <em>Boundaries</em>[0] is the x-axis, <em>boundaries</em>[1]
 	 * is the y-axis, and <em>boundaries</em>[2] is the z-axis.
 	 */
-	private float[][] boundaries; 
+	public float[][] boundaries; 
 	
 	/**
 	 * <em>coordinates</em> refer to the chunk coordinates. (does not correspond
