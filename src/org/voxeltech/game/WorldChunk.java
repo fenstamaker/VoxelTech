@@ -54,13 +54,12 @@ public class WorldChunk {
 		
 		boundaries[0][0] = x;
 		boundaries[0][1] = x+(SIZE*Voxel.SIZE);
-		boundaries[0][2] = x+(SIZE*Voxel.SIZE);
-		boundaries[0][3] = x;
+
+		boundaries[1][0] = y;
+		boundaries[1][1] = y+(SIZE*Voxel.SIZE);
 		
-		boundaries[1][0] = z+(SIZE*Voxel.SIZE);
-		boundaries[1][1] = z+(SIZE*Voxel.SIZE);
-		boundaries[1][2] = z;
-		boundaries[1][3] = z;
+		boundaries[2][0] = z;
+		boundaries[2][1] = z+(SIZE*Voxel.SIZE);
 		
 		generateChunk();
 	}
