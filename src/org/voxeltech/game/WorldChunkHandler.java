@@ -2,11 +2,11 @@ package org.voxeltech.game;
 
 import java.util.ArrayList;
 
-public class WorldChunkHolder {
+public class WorldChunkHandler {
 
 	private ArrayList< ArrayList< ArrayList<WorldChunk> > > chunks;
 	
-	public WorldChunkHolder() {
+	public WorldChunkHandler() {
 		
 	}
 	
