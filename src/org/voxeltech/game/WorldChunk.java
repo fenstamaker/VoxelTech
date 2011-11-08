@@ -48,9 +48,9 @@ public class WorldChunk {
 		origin[1] = y;
 		origin[2] = z;
 		
-		coordinates[0] = (int)(x / SIZE);
-		coordinates[1] = (int)(y / SIZE);
-		coordinates[2] = (int)(z / SIZE);
+		coordinates[0] = (int)(x / (SIZE*Voxel.SIZE));
+		coordinates[1] = (int)(y / (SIZE*Voxel.SIZE));
+		coordinates[2] = (int)(z / (SIZE*Voxel.SIZE));
 		
 		boundaries[0][0] = x;
 		boundaries[0][1] = x+(SIZE*Voxel.SIZE);
@@ -61,10 +61,33 @@ public class WorldChunk {
 		boundaries[2][0] = z;
 		boundaries[2][1] = z+(SIZE*Voxel.SIZE);
 		
-		generateChunk();
+		generateChunkTerrian();
 	}
 	
-	private void generateChunk() {
+	public WorldChunk(int x, int y, int z) {
+		this();
+		
+		origin[0] = x*(SIZE*Voxel.SIZE);
+		origin[1] = y*(SIZE*Voxel.SIZE);
+		origin[2] = z*(SIZE*Voxel.SIZE);
+		
+		coordinates[0] = x;
+		coordinates[1] = y;
+		coordinates[2] = z;
+		
+		boundaries[0][0] = x;
+		boundaries[0][1] = x+(SIZE*Voxel.SIZE);
+
+		boundaries[1][0] = y;
+		boundaries[1][1] = y+(SIZE*Voxel.SIZE);
+		
+		boundaries[2][0] = z;
+		boundaries[2][1] = z+(SIZE*Voxel.SIZE);
+		
+		generateChunkTerrian();
+	}
+	
+	private void generateChunkTerrian() {
 		for(int i = 0; i < SIZE; i++) {
 			for(int j = 0; j < SIZE; j++) {
 				for(int k = 0; k < SIZE; k++) {
