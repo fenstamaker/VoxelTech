@@ -1,42 +1,45 @@
 package org.voxeltech.game;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
 import org.voxeltech.graphics.*;
 import org.voxeltech.utils.*;
 import org.voxeltech.noise.*;
 
-public class WorldChunk {
+public class WorldChunk implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
+
 	public final static int SIZE = 20;
 
-	private ProgramClock clock = ProgramClock.getInstance();	
+	private transient ProgramClock clock = ProgramClock.getInstance();	
 	private ArrayList< ArrayList< ArrayList<Voxel> > > terrian;
 	/** 
 	 * <em>boundaries</em> holds the min and max values of the chunk. 
 	 * <em>Boundaries</em>[0] is the x-axis, <em>boundaries</em>[1]
 	 * is the y-axis, and <em>boundaries</em>[2] is the z-axis.
 	 */
-	public float[][] boundaries; 
+	public transient float[][] boundaries = new float[3][2]; 
 	
 	/**
 	 * <em>coordinates</em> refer to the chunk coordinates. (does not correspond
 	 * to actual world coordinates)
 	 */
-	public int[] coordinates;
+	public transient int[] coordinates = new int[3];
 	
 	/**
 	 * <em>origin</em> refers to the top-left actual coordinates. (this corresponds
 	 * to actual world coordinates, i.e. where the chunk is drawn) 
 	 */
-	public float[] origin;
+	public float[] origin = new float[3];
 
 	public WorldChunk() {
-		terrian = new ArrayList<ArrayList<ArrayList<Voxel>>>(SIZE);
-		for(ArrayList<ArrayList<Voxel>> a1 : terrian) {
-			a1 = new ArrayList<ArrayList<Voxel>>(SIZE);
-			for(ArrayList<Voxel> a2 : a1) {
-				a2 = new ArrayList<Voxel>(SIZE);
+		terrian = new ArrayList<ArrayList<ArrayList<Voxel>>>();
+		for(int i = 0; i < SIZE; i++) {
+			terrian.add(new ArrayList<ArrayList<Voxel>>());
+			for(int j = 0; j < SIZE; j++) {
+				terrian.get(i).add(new ArrayList<Voxel>());
 			}
 		}
 	}
@@ -100,6 +103,16 @@ public class WorldChunk {
 			            v.turnOn();
 					
 					terrian.get(i).get(j).add(v);
+				}
+			}
+		}
+	}
+	
+	public void render() {
+		for(int i = 0; i < SIZE; i++) {
+			for(int j = 0; j < SIZE; j++) {
+				for(int k = 0; k < SIZE; k++) {
+					terrian.get(i).get(j).get(k).render();
 				}
 			}
 		}

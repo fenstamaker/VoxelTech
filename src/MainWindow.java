@@ -1,111 +1,92 @@
-import javax.swing.JFrame;
 
-import java.awt.event.*;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.CardLayout;
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import java.util.concurrent.atomic.AtomicReference;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 import org.voxeltech.visualizer.*;
 import org.voxeltech.game.*;
-
+import org.voxeltech.graphics.*;
 
 /**
  *
  * @author Gary Fenstamaker
  */
-public class MainWindow extends JFrame implements ActionListener {
+public class MainWindow extends Game {
 
-    private static MainWindow frame;
-
-    private JButton startVisualButton;
-    private JButton startGameButton;
-    private JButton exitButton;
-
-    private Canvas gameCanvas;
-   
-    private JPanel overPanel;
-    private JPanel buttonPanel;
-    
-    private Visualizer visualizer;
-    private Game game;
-
-    private static boolean closeRequested = false;
-    private final static AtomicReference<Dimension> newCanvasSize = new AtomicReference<Dimension>();
-
-    public MainWindow() {
-
-	setLayout(new BorderLayout());
-
-	overPanel = new JPanel();
-	overPanel.setLayout(new CardLayout());
-
-        buttonPanel = new JPanel();
-	buttonPanel.setLayout(new GridLayout(3, 3, 25, 25));
-	gameCanvas = new Canvas();
-
-	overPanel.add(buttonPanel, "buttonPanel");
-	overPanel.add(gameCanvas, "gameCanvas");
-
-        startVisualButton = new JButton("Start Visualizer");
-        startGameButton = new JButton("Start Game");
-        exitButton = new JButton("Exit");
-        startVisualButton.addActionListener(this);
-        startGameButton.addActionListener(this);
-        exitButton.addActionListener(this);
+	World world = new World();
 	
-        buttonPanel.add(new JLabel(""));
-        buttonPanel.add(startVisualButton);
-        buttonPanel.add(new JLabel(""));
-        buttonPanel.add(new JLabel(""));
-        buttonPanel.add(startGameButton);
-        buttonPanel.add(new JLabel(""));
-        buttonPanel.add(new JLabel(""));
-        buttonPanel.add(exitButton);
-        buttonPanel.add(new JLabel(""));
-        
-        add(overPanel, BorderLayout.CENTER);
-    }
-    
-    public void actionPerformed(ActionEvent e) {
-        JButton button = (JButton)e.getSource();
-        System.out.println(button.getText());
-        if (button.getText().equals("Start Visualizer") ) {
-           
-            visualizer = new Visualizer(gameCanvas);
-            visualizer.setupDisplay();
-            CardLayout c1 = (CardLayout)overPanel.getLayout();
-	    c1.show(overPanel, "gameCanvas");
-	    gameCanvas.setFocusable(true);
-	    gameCanvas.requestFocus();
-	    gameCanvas.setIgnoreRepaint(true);
-            visualizer.start();
-	    repaint();
+    public MainWindow(int _displayHeight, int _displayWidth) {
+		super(_displayHeight, _displayWidth);
+	}
 
-        } else if (button.getText().equals("Start Game") ) {
-           
-            game = new Game();
-            game.setupDisplay();
-                        
-            game.start();
-
-        } else if (button.getText().equals("Exit") ) {
-            dispose();
-        }
+	public static void main(String[] args) {
+    	Game game = new MainWindow(600, 800);
+    	game.start();
     }
 
-    public static void main(String[] args) {
-	frame = new MainWindow();
-	frame.setTitle("Welcome");
-	frame.setSize(600, 450);
-	frame.setLocationRelativeTo(null);
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	frame.setVisible(true);        
-    }
+	@Override
+	public void setupGame() {
+		Voxel.setTexture("resources/image.png");
+	}
+
+	@Override
+	public void gameLoop() {
+		setupGame();
+		while(!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+		    
+			clock.tick();
+			dx = Mouse.getDX();
+		    dy = Mouse.getDY();
+
+		    camera.yaw(dx * mouseSensitivity);
+		    camera.pitch(-dy * mouseSensitivity);
+
+		    float dt = clock.getDt();
+
+		    if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+		    	camera.forward(movementSpeed * dt);
+		    }
+		    if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+		    	camera.backwards(movementSpeed * dt);
+		    }
+		    if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+		    	camera.left(movementSpeed * dt);
+		    }
+		    if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+		    	camera.right(movementSpeed * dt);
+		    }
+		    if (Keyboard.isKeyDown(Keyboard.KEY_Q) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+		    	camera.down(movementSpeed * dt);
+		    }
+		    if (Keyboard.isKeyDown(Keyboard.KEY_E) || Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+		    	camera.up(movementSpeed * dt);
+		    }
+		    if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+                camera.pitch(-dt * movementSpeed * 2.0f);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+                camera.pitch(dt * movementSpeed * 2.0f);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+                camera.yaw(dt * movementSpeed * 2.0f);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+                camera.yaw(-dt * movementSpeed * 2.0f);
+            }
+
+		    GL11.glLoadIdentity();
+		    camera.update();
+		    world.loadChunksAroundPlayer();
+		    
+		    // Clear screen and depth buffer
+		    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		    renderer.render();
+		    
+		    Display.update();
+		}
+		Display.destroy();
+
+	}
 
 }

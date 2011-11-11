@@ -10,21 +10,23 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-public class Voxel implements Renderable {
+public class Voxel implements Renderable, Serializable {
 	
-	public final static float SIZE = 0.5f;
+	private static final long serialVersionUID = 1L;
+
+	public final transient static float SIZE = 0.5f;
 	
-	public Mesh mesh;
+	public transient Mesh mesh;
 	
 	public Vector3f position;
-    protected Vector3f lastPosition;
+    protected transient Vector3f lastPosition;
 	
 	protected Vector3f velocity;
 	protected float acceleration;
 
     protected Color color;
     protected boolean shouldRender = true;
-    protected static Texture image;
+    protected transient static Texture image;
     
     public Voxel(float x, float y, float z) {
 		position = new Vector3f(x, y, z);

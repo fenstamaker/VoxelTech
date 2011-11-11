@@ -5,11 +5,18 @@ import java.util.Arrays;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
+import org.voxeltech.game.*;
+
 public class Renderer {
 
 	private ArrayList<Voxel> objects = new ArrayList<Voxel>();
-
-    public Renderer(int displayWidth, int displayHeight) {
+	private ArrayList<WorldChunk> chunks = new ArrayList<WorldChunk>();
+	
+	private Renderer() {
+		
+	}
+	
+    public void setupRenderer(int displayWidth, int displayHeight) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glViewport(0, 0, displayWidth, displayHeight);
@@ -36,6 +43,10 @@ public class Renderer {
     public void addAllObjects(Voxel[] objs) {
     	objects.addAll(Arrays.asList(objs));
     }
+    
+    public void addChunks(ArrayList<WorldChunk> _chunks) {
+    	chunks.addAll(_chunks);
+    }
 
     public void render() {
 		for(int i = 0; i < objects.size(); i++) {
@@ -43,6 +54,17 @@ public class Renderer {
 		    	objects.get(i).render();
 		    }
 		}
+		for(int i = 0; i < chunks.size(); i++) {
+			chunks.get(i).render();
+		}
     }
+    
+    public static Renderer getInstance() {
+		return RendererHolder.INSTANCE;
+	}
+	
+	private static class RendererHolder {
+		private static final Renderer INSTANCE = new Renderer();
+	}
 
 }

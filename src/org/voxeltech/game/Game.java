@@ -30,9 +30,13 @@ public abstract class Game {
 		displayHeight = _displayHeight;
 		displayWidth = _displayWidth;
 		
+		setupDisplay();
+		
+		clock = ProgramClock.getInstance();
 		audio = new AudioController();
-		renderer = new Renderer();
-		camera = new CameraController();
+		renderer = Renderer.getInstance();
+		renderer.setupRenderer(displayWidth, displayHeight);
+		camera = new CameraController(0, 0, 0);
 	}
 
 	
