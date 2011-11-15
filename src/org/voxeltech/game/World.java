@@ -14,6 +14,33 @@ public class World {
 	public final static int h_NUMBER_RENDER_CHUNKS = 2;
 	public final static int v_NUMBER_LOAD_CHUNKS = 3;
 	public final static int v_NUMBER_RENDER_CHUNKS = 1;
+	public final static int[] h_CHUNKS_TO_LOAD = {};
+	public final static int[] v_CHUNKS_TO_LOAD = {};
+	
+	// x, y, z modifiers
+	public final static int[][] CHUNKS_TO_RENDER = { { 0,  0,  0}, 
+
+													 { 0,  1,  0},
+													 { 0, -1,  0},
+		
+													 { 1,  0,  0},
+													 {-1,  0,  0}, 
+													 
+													 { 1,  1,  0},
+													 { 1, -1,  0},
+													 
+													 {-1,  1,  0},
+													 {-1, -1,  0},
+													 
+													 { 0,  0,  1}, 
+													 { 0,  0, -1},
+													 
+													 { 0,  1,  1}, 
+													 { 0, -1,  1}, 
+													 
+													 { 0,  1, -1}, 
+													 { 0, -1, -1}  };
+	
 	
 	public final static int VERTICAL_LIMIT = 2;
 
@@ -41,20 +68,14 @@ public class World {
 	}
 	
 	public void loadChunksAroundPlayer() {
-		for(int x = 0; x < h_NUMBER_LOAD_CHUNKS; x++) {
-			for(int y = 0; y < v_NUMBER_LOAD_CHUNKS; y++) {
-				for(int z = 0; z < h_NUMBER_LOAD_CHUNKS; z++) {
-					WorldChunk c = chunkHandler.loadChunk(chunkPlayerIsIn[0]+x, chunkPlayerIsIn[1]+y, chunkPlayerIsIn[2]+z);
-					
-					loadedChunks.add(c);
-					if(x <= h_NUMBER_RENDER_CHUNKS && y <= v_NUMBER_RENDER_CHUNKS 
-							&& z <= h_NUMBER_RENDER_CHUNKS) {
-						renderedChunks.add(c);
-						renderer.addChunk(c);
-					}
-				}
-			}
+		for(int[] modifier : CHUNKS_TO_RENDER) {
+			renderedChunks.add(chunkHandler.loadChunk(chunkPlayerIsIn[0]+modifier[0], 
+													  chunkPlayerIsIn[1]+modifier[1], 
+													  chunkPlayerIsIn[2]+modifier[2]) );
 		}
+		
+		renderer.addChunks(renderedChunks);
+
 	}
 	
 	public void addChunksToRenderer() {
