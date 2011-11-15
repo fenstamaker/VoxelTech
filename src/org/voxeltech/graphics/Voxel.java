@@ -28,6 +28,10 @@ public class Voxel implements Renderable, Serializable {
     protected boolean shouldRender = true;
     protected transient static Texture image;
     
+    public Voxel() {
+    	
+    }
+    
     public Voxel(float x, float y, float z) {
 		position = new Vector3f(x, y, z);
 		
