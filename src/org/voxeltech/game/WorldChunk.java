@@ -94,9 +94,9 @@ public class WorldChunk implements Serializable{
 		for(int i = 0; i < SIZE; i++) {
 			for(int j = 0; j < SIZE; j++) {
 				for(int k = 0; k < SIZE; k++) {
-					Voxel v = new Voxel(i*Voxel.SIZE, j*Voxel.SIZE, k*Voxel.SIZE);
+					Voxel v = new Voxel(i*Voxel.SIZE+origin[0], j*Voxel.SIZE+origin[1], k*Voxel.SIZE+origin[2]);
 					
-					double sn = SimplexNoise.noise(v.position.x, v.position.y, v.position.z);
+					double sn = SimplexNoise.noise(v.position.x/10.0, v.position.y/10.0, v.position.z/10.0);
 			        if(sn <= 0.3)
 			            v.turnOff();
 			        if(sn > 0.3)

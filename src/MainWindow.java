@@ -1,8 +1,10 @@
 
+import java.nio.FloatBuffer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.BufferUtils;
 
 import org.voxeltech.visualizer.*;
 import org.voxeltech.game.*;
@@ -27,12 +29,17 @@ public class MainWindow extends Game {
 
 	@Override
 	public void setupGame() {
+		
+		
 		Voxel.setTexture("resources/image.png");
+		Mouse.setGrabbed(true);
 	}
 
 	@Override
 	public void gameLoop() {
 		setupGame();
+
+	    world.loadChunksAroundPlayer();
 		while(!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 		    
 			clock.tick();
@@ -77,7 +84,6 @@ public class MainWindow extends Game {
 
 		    GL11.glLoadIdentity();
 		    camera.update();
-		    world.loadChunksAroundPlayer();
 		    
 		    // Clear screen and depth buffer
 		    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);

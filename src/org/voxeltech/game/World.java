@@ -10,9 +10,9 @@ import org.voxeltech.utils.*;
 
 public class World {
 	
-	public final static int h_NUMBER_LOAD_CHUNKS = 2;
-	public final static int h_NUMBER_RENDER_CHUNKS = 1;
-	public final static int v_NUMBER_LOAD_CHUNKS = 2;
+	public final static int h_NUMBER_LOAD_CHUNKS = 3;
+	public final static int h_NUMBER_RENDER_CHUNKS = 2;
+	public final static int v_NUMBER_LOAD_CHUNKS = 3;
 	public final static int v_NUMBER_RENDER_CHUNKS = 1;
 	
 	public final static int VERTICAL_LIMIT = 2;
@@ -47,9 +47,10 @@ public class World {
 					WorldChunk c = chunkHandler.loadChunk(chunkPlayerIsIn[0]+x, chunkPlayerIsIn[1]+y, chunkPlayerIsIn[2]+z);
 					
 					loadedChunks.add(c);
-					if(x < h_NUMBER_RENDER_CHUNKS && y < v_NUMBER_RENDER_CHUNKS 
-							&& z < h_NUMBER_RENDER_CHUNKS) {
+					if(x <= h_NUMBER_RENDER_CHUNKS && y <= v_NUMBER_RENDER_CHUNKS 
+							&& z <= h_NUMBER_RENDER_CHUNKS) {
 						renderedChunks.add(c);
+						renderer.addChunk(c);
 					}
 				}
 			}

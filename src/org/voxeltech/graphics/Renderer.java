@@ -1,7 +1,10 @@
 package org.voxeltech.graphics;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
@@ -34,6 +37,11 @@ public class Renderer {
 		GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // Make background white
 		GL11.glLoadIdentity();
 	    GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
+	    
+		 // Set up overall ambient light
+		FloatBuffer lightOverallAmbient = BufferUtils.createFloatBuffer(4);
+		lightOverallAmbient.put(new float[] {5.5f, 5.5f, 5.5f, 1.0f} );
+		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, (FloatBuffer)lightOverallAmbient.flip());
     }
 
     public void addObject(Voxel obj) {
@@ -42,6 +50,10 @@ public class Renderer {
 
     public void addAllObjects(Voxel[] objs) {
     	objects.addAll(Arrays.asList(objs));
+    }
+    
+    public void addChunk(WorldChunk _chunk) {
+    	chunks.add(_chunk);
     }
     
     public void addChunks(ArrayList<WorldChunk> _chunks) {
