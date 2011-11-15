@@ -39,7 +39,6 @@ public class MainWindow extends Game {
 	public void gameLoop() {
 		setupGame();
 
-	    world.loadChunksAroundPlayer();
 		while(!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 		    
 			clock.tick();
@@ -84,6 +83,8 @@ public class MainWindow extends Game {
 
 		    GL11.glLoadIdentity();
 		    camera.update();
+		     
+		    world.setPlayerLocation(camera.position.x, camera.position.y, camera.position.z);
 		    
 		    // Clear screen and depth buffer
 		    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);

@@ -59,6 +59,10 @@ public class Renderer {
     public void addChunks(ArrayList<WorldChunk> _chunks) {
     	chunks.addAll(_chunks);
     }
+    
+    public void clearChunks() {
+    	chunks.clear();
+    }
 
     public void render() {
 		for(int i = 0; i < objects.size(); i++) {

@@ -1,6 +1,7 @@
 package org.voxeltech.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.lwjgl.util.vector.Vector3f;
 
@@ -62,12 +63,20 @@ public class World {
 	
 	public void setPlayerLocation(float x, float y, float z) {
 		playerLocation = new Vector3f(x, y, z);
-		chunkPlayerIsIn = new int[] { ((int)(x / (WorldChunk.SIZE*Voxel.SIZE))), 
-									  ((int)(y / (WorldChunk.SIZE*Voxel.SIZE))), 
-									  ((int)(z / (WorldChunk.SIZE*Voxel.SIZE))) };
+		int[] newChunkLocation = new int[] { ((int)(x / (WorldChunk.SIZE*Voxel.SIZE))), 
+									   ((int)(y / (WorldChunk.SIZE*Voxel.SIZE))), 
+									   ((int)(z / (WorldChunk.SIZE*Voxel.SIZE))) };
+		
+		if(!Arrays.equals(chunkPlayerIsIn, newChunkLocation)) {
+			chunkPlayerIsIn = newChunkLocation;
+			loadChunksAroundPlayer();
+		}
+		
 	}
 	
 	public void loadChunksAroundPlayer() {
+		renderedChunks.clear();
+		renderer.clearChunks();
 		for(int[] modifier : CHUNKS_TO_RENDER) {
 			renderedChunks.add(chunkHandler.loadChunk(chunkPlayerIsIn[0]+modifier[0], 
 													  chunkPlayerIsIn[1]+modifier[1], 
