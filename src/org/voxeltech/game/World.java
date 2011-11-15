@@ -76,7 +76,7 @@ public class World {
 	
 	public void loadChunksAroundPlayer() {
 		renderedChunks.clear();
-		renderer.clearChunks();
+		renderer.clearChunks(); 
 		for(int[] modifier : CHUNKS_TO_RENDER) {
 			renderedChunks.add(chunkHandler.loadChunk(chunkPlayerIsIn[0]+modifier[0], 
 													  chunkPlayerIsIn[1]+modifier[1], 
