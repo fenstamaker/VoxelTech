@@ -14,7 +14,7 @@ public class WorldChunk implements Serializable{
 	public final static int SIZE = 20;
 
 	private transient ProgramClock clock = ProgramClock.getInstance();	
-	private ArrayList< ArrayList< ArrayList<Voxel> > > terrian;
+	private TerrianList<Voxel> terrian;
 	/** 
 	 * <em>boundaries</em> holds the min and max values of the chunk. 
 	 * <em>Boundaries</em>[0] is the x-axis, <em>boundaries</em>[1]
@@ -35,13 +35,7 @@ public class WorldChunk implements Serializable{
 	public float[] origin = new float[3];
 
 	public WorldChunk() {
-		terrian = new ArrayList<ArrayList<ArrayList<Voxel>>>();
-		for(int i = 0; i < SIZE; i++) {
-			terrian.add(new ArrayList<ArrayList<Voxel>>());
-			for(int j = 0; j < SIZE; j++) {
-				terrian.get(i).add(new ArrayList<Voxel>());
-			}
-		}
+		terrian = new TerrianList<Voxel>(3*SIZE);
 	}
 	
 	public WorldChunk(float x, float y, float z) {
@@ -91,9 +85,9 @@ public class WorldChunk implements Serializable{
 	}
 	
 	private void generateChunkTerrian() {
-		for(int i = 0; i < SIZE; i++) {
+		for(int k = 0; k < SIZE; k++) {
 			for(int j = 0; j < SIZE; j++) {
-				for(int k = 0; k < SIZE; k++) {
+				for(int i = 0; i < SIZE; i++) {
 					Voxel v = new Voxel(i*Voxel.SIZE+origin[0], j*Voxel.SIZE+origin[1], k*Voxel.SIZE+origin[2]);
 					
 					double sn = SimplexNoise.noise(v.position.x/10.0, v.position.y/10.0, v.position.z/10.0);
@@ -102,19 +96,15 @@ public class WorldChunk implements Serializable{
 			        if(sn > 0.3)
 			            v.turnOn();
 					
-					terrian.get(i).get(j).add(v);
+					terrian.add(v);
 				}
 			}
 		}
 	}
 	
 	public void render() {
-		for(int i = 0; i < SIZE; i++) {
-			for(int j = 0; j < SIZE; j++) {
-				for(int k = 0; k < SIZE; k++) {
-					terrian.get(i).get(j).get(k).render();
-				}
-			}
+		for(Voxel v : terrian) {
+			v.render();
 		}
 	}
 	
