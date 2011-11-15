@@ -84,7 +84,7 @@ public class MainWindow extends Game {
 		    GL11.glLoadIdentity();
 		    camera.update();
 		     
-		    world.setPlayerLocation(camera.position.x, camera.position.y, camera.position.z);
+		    world.setPlayerLocation(-1.0f*camera.position.x, -1.0f*camera.position.y, -1.0f*camera.position.z);
 		    
 		    // Clear screen and depth buffer
 		    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
