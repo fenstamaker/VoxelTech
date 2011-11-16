@@ -16,10 +16,11 @@ public class Voxel implements Renderable, Serializable {
 
 	public final transient static float SIZE = 0.5f;
 	
-	public transient Mesh mesh;
+	//public transient Mesh mesh;
 	
 	public Vector3f position;
     protected transient Vector3f lastPosition;
+    public int[] coordinates;
 	
 	protected Vector3f velocity;
 	protected float acceleration;
@@ -44,9 +45,13 @@ public class Voxel implements Renderable, Serializable {
     public Voxel(float x, float y, float z) {
 		position = new Vector3f(x, y, z);
 		
-		mesh = new Mesh(position, SIZE);
+		//mesh = new Mesh(position, SIZE);
 	
 		color = new Color(0f, .8f, .1f);
+    }
+    
+    public void setCoordinates(int x, int y, int z) {
+    	coordinates = new int[] { x, y, z };
     }
 	
 	public void setColor(float r, float g, float b) {
@@ -68,6 +73,9 @@ public class Voxel implements Renderable, Serializable {
 
     public boolean shouldRender() { return shouldRender; }
     
+    public void render() {}
+    
+    /*
     public void render() {
     	if(shouldRender) {
 	    	GL11.glPushMatrix();
@@ -93,6 +101,6 @@ public class Voxel implements Renderable, Serializable {
 	            
 	    	GL11.glPopMatrix();
     	}
-    }
+    }*/
 
 }

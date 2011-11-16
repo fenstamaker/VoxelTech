@@ -18,6 +18,110 @@ public class Mesh {
 
     public int getNormalLength() { return normals.size(); }
 
+    /**
+     * Faces - ordered in such a way that:
+     *  - [0] are the normals
+     *  - [1] are the texCoords
+     */
+    
+    public static Float[][] frontFace = { 
+								    		{0.0f, 0.0f, 1.0f},
+								    		{0.0f, 0.0f,  1.0f, 0.0f,  1.0f, 1.0f,  0.0f, 1.0f}
+								    	};
+    
+    public static Float[][] backFace = 	{ 
+											{0.0f, 0.0f, -1.0f},
+											{1.0f, 0.0f,  1.0f, 1.0f,  0.0f, 1.0f,  0.0f, 0.0f}
+										};
+    
+    public static Float[][] leftFace = 	{ 
+											{-1.0f, 0.0f, 0.0f},
+											{0.0f, 0.0f,  1.0f, 0.0f,  1.0f, 1.0f,  0.0f, 1.0f}
+										};
+    
+    public static Float[][] rightFace = { 
+											{1.0f, 0.0f, 0.0f},
+											{1.0f, 0.0f,  1.0f, 1.0f,  0.0f, 1.0f,  0.0f, 0.0f}
+										};
+    
+    public static Float[][] topFace =	{ 
+											{0.0f, 1.0f, 0.0f},
+											{0.0f, 1.0f,  0.0f, 0.0f,  1.0f, 0.0f,  1.0f, 1.0f}
+										};
+    
+    public static Float[][] bottomFace = { 
+											{0.0f, -1.0f, 0.0f},
+											{1.0f, 1.0f,  0.0f, 1.0f,  0.0f, 0.0f,  1.0f, 0.0f}
+										};
+    
+    public static Float[] getTopVertices(Vector3f position) {
+    	Float[] v = {
+				// Top Face - {Top Left}, {Bottom Left}, {Bottom Right}, {Top Right}
+				position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE, 
+				position.x, position.y+Voxel.SIZE, position.z,
+				position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z,
+				position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE
+			};
+    	return v;
+    }
+    
+    public static Float[] getBottomVertices(Vector3f position) {
+    	Float[] v = {
+    			// Bottom Face - {Top Right}, {Top Left}, {Bottom Left}, {Bottom Right}
+    			position.x, position.y, position.z-Voxel.SIZE,
+				position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE,
+				position.x+Voxel.SIZE, position.y, position.z, 
+				position.x, position.y, position.z
+			};
+    	return v;
+    }
+    
+    public static Float[] getFrontVertices(Vector3f position) {
+    	Float[] v = {
+    			// Front Face - {Bottom Left}, {Bottom Right}, {Top Right}, {Top Left}
+				position.x, position.y, position.z,
+				position.x+Voxel.SIZE, position.y, position.z,
+				position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z,  
+				position.x, position.y+Voxel.SIZE, position.z
+			};
+    	return v;
+    }
+    
+    public static Float[] getBackVertices(Vector3f position) {
+    	Float[] v = {
+    			// Back Face - {Bottom Right}, {Top Right}, {Top Left}, {Bottom Left}
+				position.x, position.y, position.z-Voxel.SIZE,
+				position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE,
+				position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE,  
+				position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE
+			};
+    	return v;
+    }
+    
+    public static Float[] getLeftVertices(Vector3f position) {
+    	Float[] v = {
+    			// Left Face - {Bottom Left}, {Bottom Right}, {Top Right}, {Top Left}
+				position.x, position.y, position.z-Voxel.SIZE,
+				position.x, position.y, position.z,
+				position.x, position.y+Voxel.SIZE, position.z,
+				position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE
+			};
+    	return v;
+    }
+    
+    public static Float[] getRightVertices(Vector3f position) {
+    	Float[] v = {
+    			// Right face - {Bottom Right}, {Top Right}, {Top Left}, {Bototm Left}
+				position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE,
+				position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE,
+				position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z,
+				position.x+Voxel.SIZE, position.y, position.z
+			};
+    	return v;
+    }
+    
+    
+    
 	public Mesh(Vector3f position, float size) {
 		
 			float[] n = {
