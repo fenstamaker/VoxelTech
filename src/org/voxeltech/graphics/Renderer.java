@@ -71,6 +71,7 @@ public class Renderer {
 		    }
 		}
 		for(int i = 0; i < chunks.size(); i++) {
+			chunks.get(i).applyAnimation();
 			chunks.get(i).render();
 		}
     }

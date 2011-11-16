@@ -70,13 +70,11 @@ public class CameraController {
     }
 
     public void up(float distance) {
-    	position.z += distance * (float)Math.sin(Math.toRadians(pitch));
-    	position.y -= distance * (float)Math.cos(Math.toRadians(pitch));
+    	position.y -= distance;
     }
 
     public void down(float distance) {
-    	position.z -= distance * (float)Math.sin(Math.toRadians(pitch));
-    	position.y += distance * (float)Math.cos(Math.toRadians(pitch));
+    	position.y += distance;
     }
 
     public void update() {

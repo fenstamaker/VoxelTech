@@ -12,7 +12,7 @@ public class WorldChunk implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	public final static int SIZE = 20;
+	public final static int SIZE = 5;
 
 	private transient ProgramClock clock = ProgramClock.getInstance();	
 	private TerrianList<Voxel> terrian;
@@ -91,15 +91,30 @@ public class WorldChunk implements Serializable{
 				for(int i = 0; i < SIZE; i++) {
 					Voxel v = new Voxel(i*Voxel.SIZE+origin[0], j*Voxel.SIZE+origin[1], k*Voxel.SIZE+origin[2]);
 					
-					double sn = SimplexNoise.noise(v.position.x/10.0, v.position.y/10.0, v.position.z/10.0);
-			        if(sn <= 0.3)
+					double sn = SimplexNoise.noise(v.position.x/10.0, v.position.y/10.0, v.position.z/10.0, clock.getTime());
+			        if(sn < 0.3)
 			            v.turnOff();
-			        if(sn > 0.3)
+			        if(sn >= 0.3)
 			            v.turnOn();
+			        
+			        v.setColor((float)Math.abs(sn)*.8f, (float)Math.abs(sn)*.2f, (float)Math.abs(sn)*.3f);
 					
 					terrian.add(v);
 				}
 			}
+		}
+	}
+	
+	public void applyAnimation() {
+		for(Voxel v : terrian) {
+			double sn = SimplexNoise.noise(v.position.x/10.0, v.position.y/10.0, v.position.z/10.0, clock.getTime());
+			
+	        if(sn < 0.3)
+	            v.turnOff();
+	        if(sn >= 0.3)
+	            v.turnOn();
+	        
+	        v.setColor((float)Math.abs(sn)*.8f, (float)Math.abs(sn)*.2f, (float)Math.abs(sn)*.3f);
 		}
 	}
 	

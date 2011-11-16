@@ -34,6 +34,10 @@ public class ProgramClock {
 		return dt;
 	}
 	
+	public float getTime() {
+		return time;
+	}
+	
 	public float getRandomBasedOnClock() {
 		long r = Sys.getTime();
 		float q = r / Long.MAX_VALUE;

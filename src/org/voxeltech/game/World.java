@@ -21,26 +21,37 @@ public class World {
 	// x, y, z modifiers
 	public final static int[][] CHUNKS_TO_RENDER = { { 0,  0,  0}, 
 
-													 { 0,  1,  0},
 													 { 0, -1,  0},
 		
 													 { 1,  0,  0},
 													 {-1,  0,  0}, 
 													 
-													 { 1,  1,  0},
 													 { 1, -1,  0},
 													 
-													 {-1,  1,  0},
 													 {-1, -1,  0},
 													 
 													 { 0,  0,  1}, 
 													 { 0,  0, -1},
-													 
-													 { 0,  1,  1}, 
+													  
 													 { 0, -1,  1}, 
+													  
+													 { 0, -1, -1},
 													 
-													 { 0,  1, -1}, 
-													 { 0, -1, -1}  };
+													 { 0, -2,  0},
+		
+													 { 2,  0,  0},
+													 {-2,  0,  0}, 
+													 
+													 { 2, -2,  0},
+													 
+													 {-2, -2,  0},
+													 
+													 { 0,  0,  2}, 
+													 { 0,  0, -2},
+													 
+													 { 0, -2,  2}, 
+													 
+													 { 0, -2, -2}    };
 	
 	
 	public final static int VERTICAL_LIMIT = 2;
@@ -77,11 +88,8 @@ public class World {
 	public void loadChunksAroundPlayer() {
 		renderedChunks.clear();
 		renderer.clearChunks(); 
-		for(int[] modifier : CHUNKS_TO_RENDER) {
-			renderedChunks.add(chunkHandler.loadChunk(chunkPlayerIsIn[0]+modifier[0], 
-													  chunkPlayerIsIn[1]+modifier[1], 
-													  chunkPlayerIsIn[2]+modifier[2]) );
-		}
+		
+		renderedChunks.addAll(chunkHandler.loadChunksAroundChunk(chunkPlayerIsIn[0], chunkPlayerIsIn[1], chunkPlayerIsIn[2]));
 		
 		renderer.addChunks(renderedChunks);
 

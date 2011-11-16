@@ -28,6 +28,15 @@ public class Voxel implements Renderable, Serializable {
     protected boolean shouldRender = true;
     protected transient static Texture image;
     
+    public static void setTexture(String texturePath) {
+    	// Load Texture
+    	try {
+    	    image = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(texturePath));
+    	} catch(IOException e) {
+    	    e.printStackTrace();
+    	}
+    }
+    
     public Voxel() {
     	
     }
@@ -39,55 +48,9 @@ public class Voxel implements Renderable, Serializable {
 	
 		color = new Color(0f, .8f, .1f);
     }
-
-    
-    public boolean hasCollidedWith(Voxel obj) {
-
-		for( ArrayList<Float> pt : mesh.vertices.get(2) ) {
-		    if( pt.get(0) > obj.mesh.vertices.get(0).get(0).get(0) && pt.get(0) < obj.mesh.vertices.get(0).get(1).get(0) ) {
-				if(pt.get(1) > obj.mesh.vertices.get(4).get(0).get(1) && pt.get(1) < obj.mesh.vertices.get(4).get(1).get(1) ) {
-					if ( pt.get(2) > obj.mesh.vertices.get(2).get(0).get(2) && pt.get(2) < obj.mesh.vertices.get(2).get(1).get(2) ) {
-						return true;
-				    }
-				}
-		    }
-		}
-	
-		for( ArrayList<Float> pt : mesh.vertices.get(3) ) {
-		    if( pt.get(0) > obj.mesh.vertices.get(0).get(0).get(0) && pt.get(0) < obj.mesh.vertices.get(0).get(1).get(0) ) {
-				if( pt.get(1) > obj.mesh.vertices.get(4).get(0).get(1) && pt.get(1) < obj.mesh.vertices.get(4).get(1).get(1) ) {
-				    if ( pt.get(2) > obj.mesh.vertices.get(2).get(0).get(2) && pt.get(2) < obj.mesh.vertices.get(2).get(1).get(2) ) {
-				    	return true;
-				    }
-				}
-		    }
-		}
-		
-		return false;
-		
-    }
-    
-	public void move(float distance) {
-		
-		Vector3f m = new Vector3f(velocity);
-		m.scale(distance*acceleration);
-		lastPosition = position;
-		position = Vector3f.add(position, m, null);
-		mesh.changePosition(position, SIZE);
-		
-	}
 	
 	public void setColor(float r, float g, float b) {
         color = new Color(r, g, b);
-    }
-    
-    public static void setTexture(String texturePath) {
-    	// Load Texture
-    	try {
-    	    image = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(texturePath));
-    	} catch(IOException e) {
-    	    e.printStackTrace();
-    	}
     }
     
     public void turnOn() {

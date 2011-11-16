@@ -3,15 +3,13 @@ package org.voxeltech.game;
 import java.lang.Thread;
 import java.util.ArrayList;
 
-public class WorldChunkHandler implements Runnable {
+public class WorldChunkHandler {
 
-	private Thread thread;
 	private ArrayList<WorldChunk> chunks;
 	
 	public WorldChunkHandler() {
 		chunks = new ArrayList<WorldChunk>();
-		thread = new Thread(this);
-		thread.start();
+		
 	}
 	
 	public WorldChunk generateChunk(float x, float y, float z) {
@@ -33,11 +31,30 @@ public class WorldChunkHandler implements Runnable {
 		}
 		return generateChunk(x, y, z);
 	}
-
-	@Override
-	public void run() {
-		
-	}
 	
+	
+	public ArrayList<WorldChunk> loadChunksAroundChunk(int x, int y, int z) {
+		ArrayList<WorldChunk> chunkHolder = new ArrayList<WorldChunk>();
+		
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 5; j++) {
+				for(int k = 0; k < 10; k++) {
+					chunkHolder.add(loadChunk(x+i, y+j, z+k));
+					chunkHolder.add(loadChunk(x-i, y-j, z-k));
+				}
+			}
+		}
+		
+		/*
+		for(int i = 0; i < chunks.size(); i++) {
+			if(!chunkHolder.contains(chunks.get(i))) {
+				chunks.remove(i);
+				i--;
+			}
+		}*/
+		
+		return chunkHolder;
+
+	}
 	
 }
