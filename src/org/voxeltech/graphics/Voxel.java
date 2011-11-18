@@ -16,7 +16,7 @@ public class Voxel implements Renderable, Serializable {
 
 	public final transient static float SIZE = 0.5f;
 	
-	//public transient Mesh mesh;
+	public Mesh mesh;
 	
 	public Vector3f position;
     protected transient Vector3f lastPosition;
@@ -25,9 +25,9 @@ public class Voxel implements Renderable, Serializable {
 	protected Vector3f velocity;
 	protected float acceleration;
 
-    protected Color color;
+    public Color color;
     protected boolean shouldRender = true;
-    protected transient static Texture image;
+    public transient static Texture image;
     
     public static void setTexture(String texturePath) {
     	// Load Texture
@@ -45,7 +45,7 @@ public class Voxel implements Renderable, Serializable {
     public Voxel(float x, float y, float z) {
 		position = new Vector3f(x, y, z);
 		
-		//mesh = new Mesh(position, SIZE);
+		mesh = new Mesh(position, SIZE);
 	
 		color = new Color(0f, .8f, .1f);
     }
