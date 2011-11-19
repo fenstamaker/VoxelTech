@@ -1,20 +1,29 @@
 package org.voxeltech.game;
 
 import java.io.*;
+import java.sql.*;
 import java.lang.Thread;
 import java.util.ArrayList;
 
 public class WorldChunkHandler {
 
 	private ArrayList<WorldChunk> chunks;
-	private FileInputStream fileIn;
-	private FileOutputStream fileOut;
-	private File file;	
+	private Connection connection;
+
 	private ObjectOutputStream objectOut;
 	private ObjectInputStream objectIn;
+	private ByteArrayOutputStream bufferOut;
+	private ByteArrayInputStream bufferIn;
 	
 	public WorldChunkHandler() {
 		chunks = new ArrayList<WorldChunk>();
+		
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch(Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 	}
 	
@@ -27,43 +36,49 @@ public class WorldChunkHandler {
 	}
 	
 	public WorldChunk loadChunk(int x, int y, int z) {
-		String filename = System.getProperty("user.dir") + "VT_CHUNK_" + x + "_" + y + "_" + z;
-		file = new File(filename);
 		
 		WorldChunk chunk = null;
+		int id = x+y+z;
 		
-		if(!file.exists()) {
+		try {
 			
-			try {
-				file.createNewFile();
-				fileOut = new FileOutputStream(file);
-				objectOut = new ObjectOutputStream(fileOut);
-
+			connection = DriverManager.getConnection("jdbc:sqlite:world.db");
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(15);
+			
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS chunks (id int, data BLOB)");
+			
+			PreparedStatement prepStatement;
+			ResultSet rs = statement.executeQuery("SELECT * FROM chunks WHERE id=" + id + " LIMIT 1");
+			
+			if(!rs.next()) {
 				chunk = generateChunk(x, y, z);
-				
+				bufferOut = new ByteArrayOutputStream();
+				objectOut= new ObjectOutputStream(bufferOut);
 				objectOut.writeObject(chunk);
 				objectOut.close();
-				fileOut.close();
-			} catch(Exception e) {
-				e.printStackTrace();
-				System.exit(-1);
-			}
-			
-		} else {
-			
-			try {
-				fileIn = new FileInputStream(file);
-				objectIn = new ObjectInputStream(fileIn);
 				
+				prepStatement = connection.prepareStatement("INSERT INTO chunks VALUES (?, ?)");
+				prepStatement.setInt(1, id);
+				prepStatement.setBytes(2, bufferOut.toByteArray());
+				prepStatement.execute();
+				bufferOut.close();
+			} else {
+				byte[] byteBuffer = rs.getBytes("data");
+				bufferIn = new ByteArrayInputStream(byteBuffer);
+				objectIn = new ObjectInputStream(bufferIn);
 				chunk = (WorldChunk)objectIn.readObject();
-				
 				objectIn.close();
-				fileIn.close();
-			} catch(Exception e) {
-				e.printStackTrace();
-				System.exit(-1);
+				bufferIn.close();
 			}
 			
+			rs.close();
+			statement.close();
+			connection.close();			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 		
 		return chunk;

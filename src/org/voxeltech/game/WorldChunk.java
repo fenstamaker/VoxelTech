@@ -1,6 +1,9 @@
 package org.voxeltech.game;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,26 +18,24 @@ import org.voxeltech.graphics.*;
 import org.voxeltech.utils.*;
 import org.voxeltech.noise.*;
 
-public class WorldChunk implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
+public class WorldChunk implements Externalizable{
 
-	public final static int SIZE = 20;
+	public final static int SIZE = 30;
 
-	private transient ProgramClock clock = ProgramClock.getInstance();	
+	private ProgramClock clock = ProgramClock.getInstance();	
 	private TerrianList<Voxel> terrian;
 	/** 
 	 * <em>boundaries</em> holds the min and max values of the chunk. 
 	 * <em>Boundaries</em>[0] is the x-axis, <em>boundaries</em>[1]
 	 * is the y-axis, and <em>boundaries</em>[2] is the z-axis.
 	 */
-	public transient float[][] boundaries = new float[3][2]; 
+	public float[][] boundaries = new float[3][2]; 
 	
 	/**
 	 * <em>coordinates</em> refer to the chunk coordinates. (does not correspond
 	 * to actual world coordinates)
 	 */
-	public transient int[] coordinates = new int[3];
+	public int[] coordinates = new int[3];
 	
 	/**
 	 * <em>origin</em> refers to the top-left actual coordinates. (this corresponds
@@ -57,22 +58,11 @@ public class WorldChunk implements Serializable{
 	public WorldChunk(float x, float y, float z) {
 		this();
 		
-		origin[0] = x;
-		origin[1] = y;
-		origin[2] = z;
-		
 		coordinates[0] = (int)(x / (SIZE*Voxel.SIZE));
 		coordinates[1] = (int)(y / (SIZE*Voxel.SIZE));
 		coordinates[2] = (int)(z / (SIZE*Voxel.SIZE));
 		
-		boundaries[0][0] = x;
-		boundaries[0][1] = x+(SIZE*Voxel.SIZE);
-
-		boundaries[1][0] = y;
-		boundaries[1][1] = y+(SIZE*Voxel.SIZE);
-		
-		boundaries[2][0] = z;
-		boundaries[2][1] = z+(SIZE*Voxel.SIZE);
+		calculateChunkInfo(coordinates[0], coordinates[1], coordinates[2]);
 		
 		generateChunkTerrian();
 	}
@@ -80,24 +70,28 @@ public class WorldChunk implements Serializable{
 	public WorldChunk(int x, int y, int z) {
 		this();
 		
-		origin[0] = x*(SIZE*Voxel.SIZE);
-		origin[1] = y*(SIZE*Voxel.SIZE);
-		origin[2] = z*(SIZE*Voxel.SIZE);
-		
 		coordinates[0] = x;
 		coordinates[1] = y;
 		coordinates[2] = z;
 		
-		boundaries[0][0] = x;
-		boundaries[0][1] = x+(SIZE*Voxel.SIZE);
-
-		boundaries[1][0] = y;
-		boundaries[1][1] = y+(SIZE*Voxel.SIZE);
-		
-		boundaries[2][0] = z;
-		boundaries[2][1] = z+(SIZE*Voxel.SIZE);
+		calculateChunkInfo(x, y, z);
 		
 		generateChunkTerrian();
+	}
+	
+	private void calculateChunkInfo(int x, int y, int z) {
+		origin[0] = x*(SIZE*Voxel.SIZE);
+		origin[1] = y*(SIZE*Voxel.SIZE);
+		origin[2] = z*(SIZE*Voxel.SIZE);
+		
+		boundaries[0][0] = origin[0];
+		boundaries[0][1] = origin[0]+(SIZE*Voxel.SIZE);
+
+		boundaries[1][0] = origin[1];
+		boundaries[1][1] = origin[1]+(SIZE*Voxel.SIZE);
+		
+		boundaries[2][0] = origin[2];
+		boundaries[2][1] = origin[2]+(SIZE*Voxel.SIZE);
 	}
 	
 	private void generateChunkTerrian() {
@@ -161,10 +155,10 @@ public class WorldChunk implements Serializable{
         		vertexBuffer.put( vox.mesh.vertices );
                 
                 vertexBuffer.rewind();
-                vox.mesh.normalBuffer.rewind();
-                vox.mesh.texBuffer.rewind();
-                GL11.glNormalPointer(0, vox.mesh.normalBuffer);
-                GL11.glTexCoordPointer(2, 0, vox.mesh.texBuffer);
+                Mesh.normalBuffer.rewind();
+                Mesh.texBuffer.rewind();
+                GL11.glNormalPointer(0, Mesh.normalBuffer);
+                GL11.glTexCoordPointer(2, 0, Mesh.texBuffer);
                 GL11.glVertexPointer(3, 0, vertexBuffer);
                 GL11.glDrawArrays(GL11.GL_QUADS, 0, 24);
         	}
@@ -176,6 +170,31 @@ public class WorldChunk implements Serializable{
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
             
     	GL11.glPopMatrix();
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		coordinates = new int[] { in.readInt(), in.readInt(), in.readInt() };
+		
+		calculateChunkInfo(coordinates[0], coordinates[1], coordinates[2]);
+		
+		terrian = new TerrianList<Voxel>();
+		
+		while(in.available() > 0) {
+			terrian.add((Voxel)in.readObject());
+		}
+		
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(coordinates[0]);
+		out.writeInt(coordinates[1]);
+		out.writeInt(coordinates[2]);
+		
+		for(Voxel vox : terrian) {
+			out.writeObject(vox);		
+		}
 	}
 	
 }

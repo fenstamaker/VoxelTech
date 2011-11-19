@@ -1,22 +1,20 @@
 package org.voxeltech.graphics;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Vector3f;
 
-public class Mesh implements Serializable {
+public class Mesh {
 	
-	private static final long serialVersionUID = 1L;
 	public ArrayList<Float> normals = new ArrayList<Float>();
     public ArrayList<Float> texCoords = new ArrayList<Float>();
     public float[] vertices;
     public ArrayList<ArrayList<ArrayList<Float>>> vertices3f = new ArrayList<ArrayList<ArrayList<Float>>>();
 
-    public transient static FloatBuffer normalBuffer = null;
-    public transient static FloatBuffer texBuffer = null;
+    public static FloatBuffer normalBuffer = null;
+    public static FloatBuffer texBuffer = null;
     
     public int getNormalLength() { return normals.size(); }    
     

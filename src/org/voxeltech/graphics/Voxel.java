@@ -10,24 +10,18 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-public class Voxel implements Renderable, Serializable {
-	
-	private static final long serialVersionUID = 1L;
+public class Voxel implements Renderable, Externalizable {
 
-	public final transient static float SIZE = 0.5f;
+	public final static float SIZE = 0.5f;
 	
 	public Mesh mesh;
 	
 	public Vector3f position;
-    protected transient Vector3f lastPosition;
     public int[] coordinates;
-	
-	protected Vector3f velocity;
-	protected float acceleration;
 
     public Color color;
     protected boolean shouldRender = true;
-    public transient static Texture image;
+    public static Texture image;
     
     public static void setTexture(String texturePath) {
     	// Load Texture
@@ -74,6 +68,29 @@ public class Voxel implements Renderable, Serializable {
     public boolean shouldRender() { return shouldRender; }
     
     public void render() {}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		position = new Vector3f(in.readFloat(), in.readFloat(), in.readFloat());
+		coordinates = new int[] { in.readInt(), in.readInt(), in.readInt() };
+		color = new Color(in.readFloat(), in.readFloat(), in.readFloat());
+		shouldRender = in.readBoolean();
+		mesh = new Mesh(position, SIZE);
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeFloat(position.x);
+		out.writeFloat(position.y);
+		out.writeFloat(position.z);
+		out.writeInt(coordinates[0]);
+		out.writeInt(coordinates[1]);
+		out.writeInt(coordinates[2]);
+		out.writeFloat(color.r);
+		out.writeFloat(color.g);
+		out.writeFloat(color.b);
+		out.writeBoolean(shouldRender);
+	}
     
     /*
     public void render() {
