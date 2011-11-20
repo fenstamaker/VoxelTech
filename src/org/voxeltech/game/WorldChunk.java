@@ -20,7 +20,7 @@ import org.voxeltech.noise.*;
 
 public class WorldChunk implements Externalizable{
 
-	public final static int SIZE = 30;
+	public final static int SIZE = 10;
 
 	private ProgramClock clock = ProgramClock.getInstance();	
 	private TerrianList<Voxel> terrian;

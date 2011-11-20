@@ -35,7 +35,7 @@ public class WorldChunkHandler {
 		return new WorldChunk(x, y, z);
 	}
 	
-	public ArrayList<WorldChunk> loadChunk(int x, int y, int z) {
+	public ArrayList<WorldChunk> loadChunk() {
 		ArrayList<WorldChunk> chunkHolder = new ArrayList<WorldChunk>();
 		ArrayList<Integer> foundChunks = new ArrayList<Integer>();
 		
@@ -45,11 +45,12 @@ public class WorldChunkHandler {
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(15);
 			
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS chunks (id VARCHAR(15), data BLOB)");
+			statement.executeUpdate("DROP TABLE IF EXISTS chunks");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS chunks (name VARCHAR(15), data BLOB)");
 			
 			PreparedStatement prepStatement;
 			
-			String sql = "SELECT * FROM chunks WHERE id IN (";
+			String sql = "SELECT * FROM chunks WHERE name IN (";
 			
 			for(int i = 0; i < chunks.size(); i++) {
 				if(i!=0)
@@ -82,7 +83,9 @@ public class WorldChunkHandler {
 				
 				if(!foundChunks.contains(i)) {
 					
-					tempChunk = generateChunk(x, y, z);
+					tempChunk = generateChunk(i[0], i[1], i[2]);
+					chunkHolder.add(tempChunk);
+					
 					bufferOut = new ByteArrayOutputStream();
 					objectOut= new ObjectOutputStream(bufferOut);
 					objectOut.writeObject(tempChunk);
