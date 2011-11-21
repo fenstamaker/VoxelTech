@@ -1,30 +1,24 @@
 package org.voxeltech.game;
 
 import java.io.*;
-import java.sql.*;
 import java.lang.Thread;
 import java.util.ArrayList;
 
 public class WorldChunkHandler {
 
 	private ArrayList<Integer[]> chunks;
-	private Connection connection;
+	
+	private FileInputStream fileIn;
+	private FileOutputStream fileOut;
+	private File file;
 
 	private ObjectOutputStream objectOut;
 	private ObjectInputStream objectIn;
-	private ByteArrayOutputStream bufferOut;
-	private ByteArrayInputStream bufferIn;
+	private BufferedOutputStream bufferOut;
+	private BufferedInputStream bufferIn;
 	
 	public WorldChunkHandler() {
-		chunks = new ArrayList<Integer[]>();
-		
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch(Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
+		chunks = new ArrayList<Integer[]>();		
 	}
 	
 	public WorldChunk generateChunk(float x, float y, float z) {
@@ -35,14 +29,67 @@ public class WorldChunkHandler {
 		return new WorldChunk(x, y, z);
 	}
 	
-	public ArrayList<WorldChunk> loadChunk() {
+	public ArrayList<WorldChunk> loadChunks() {
 		ArrayList<WorldChunk> chunkHolder = new ArrayList<WorldChunk>();
-		ArrayList<Integer> foundChunks = new ArrayList<Integer>();
 		
+		for(Integer[] i : chunks) {
+			
+			int x = i[0];
+			int y = i[1];
+			int z = i[2];
+			
+			String filename = System.getProperty("user.dir") + "VT_CHUNK_" + x + "_" + y + "_" + z;
+			file = new File(filename);
+
+			WorldChunk chunk = null;
+
+			if(!file.exists()) {
+
+				try {
+					file.createNewFile();
+					fileOut = new FileOutputStream(file);
+					bufferOut = new BufferedOutputStream(fileOut);
+					objectOut = new ObjectOutputStream(bufferOut);
+
+					chunk = generateChunk(x, y, z);
+
+					objectOut.writeObject(chunk);
+					objectOut.close();
+					bufferOut.close();
+					fileOut.close();
+				} catch(Exception e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}
+
+			} else {
+
+				try {
+					fileIn = new FileInputStream(file);
+					bufferIn = new BufferedInputStream(fileIn);
+					objectIn = new ObjectInputStream(bufferIn);
+
+					chunk = (WorldChunk)objectIn.readObject();
+
+					objectIn.close();
+					bufferIn.close();
+					fileIn.close();
+				} catch(Exception e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}
+
+			}
+			
+			chunkHolder.add(chunk);
+			
+		}
 		
+		/*
 		for(Integer[] i : chunks) {
 			chunkHolder.add(generateChunk(i[0], i[1], i[2]));
 		}
+		*/
 		
 		return chunkHolder;
 	}
@@ -66,7 +113,7 @@ public class WorldChunkHandler {
 			}
 		}
 		
-		return loadChunk();
+		return loadChunks();
 
 	}
 	

@@ -12,6 +12,7 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Voxel implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	public final transient static float SIZE = 0.5f;
 	public transient static Texture image;
 	
