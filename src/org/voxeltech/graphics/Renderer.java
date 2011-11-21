@@ -68,11 +68,6 @@ public class Renderer {
     }
 
     public void render() {
-		for(int i = 0; i < objects.size(); i++) {
-		    if(objects.get(i).shouldRender()) {
-		    	objects.get(i).render();
-		    }
-		}
 		for(int i = 0; i < chunks.size(); i++) {
 			chunks.get(i).applyAnimation();
 			chunks.get(i).render();

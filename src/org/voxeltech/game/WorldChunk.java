@@ -11,6 +11,7 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector3f;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -24,12 +25,6 @@ public class WorldChunk implements Externalizable{
 
 	private ProgramClock clock = ProgramClock.getInstance();	
 	private TerrianList<Voxel> terrian;
-	/** 
-	 * <em>boundaries</em> holds the min and max values of the chunk. 
-	 * <em>Boundaries</em>[0] is the x-axis, <em>boundaries</em>[1]
-	 * is the y-axis, and <em>boundaries</em>[2] is the z-axis.
-	 */
-	public float[][] boundaries = new float[3][2]; 
 	
 	/**
 	 * <em>coordinates</em> refer to the chunk coordinates. (does not correspond
@@ -83,57 +78,58 @@ public class WorldChunk implements Externalizable{
 		origin[0] = x*(SIZE*Voxel.SIZE);
 		origin[1] = y*(SIZE*Voxel.SIZE);
 		origin[2] = z*(SIZE*Voxel.SIZE);
-		
-		boundaries[0][0] = origin[0];
-		boundaries[0][1] = origin[0]+(SIZE*Voxel.SIZE);
-
-		boundaries[1][0] = origin[1];
-		boundaries[1][1] = origin[1]+(SIZE*Voxel.SIZE);
-		
-		boundaries[2][0] = origin[2];
-		boundaries[2][1] = origin[2]+(SIZE*Voxel.SIZE);
 	}
 	
 	private void generateChunkTerrian() {
 		for(int k = 0; k < SIZE; k++) {
 			for(int j = 0; j < SIZE; j++) {
 				for(int i = 0; i < SIZE; i++) {
-					Voxel v = new Voxel(i*Voxel.SIZE+origin[0], j*Voxel.SIZE+origin[1], k*Voxel.SIZE+origin[2]);
-					v.setCoordinates(i, j, k);
 					
-					double sn = SimplexNoise.noise(v.position.x/10.0, v.position.y/10.0, v.position.z/10.0);//, clock.getTime());
-			        if(sn < 0.3)
-			            v.turnOff();
-			        if(sn >= 0.3)
-			            v.turnOn();
+					Voxel vox = new Voxel(i, j, k);
+					vox.setActualPosition((i*Voxel.SIZE+origin[0]), (j*Voxel.SIZE+origin[1]), (k*Voxel.SIZE+origin[2]));
+					/*
+					double noise2d = SimplexNoise.noise( vox.actualPosition[0]/10.0, vox.actualPosition[2]/10.0 );
+					double noise3d = SimplexNoise.noise( vox.actualPosition[0]/10.0, vox.actualPosition[1]/10.0, vox.actualPosition[2]/10.0);//, clock.getTime());
 			        
-			        v.setColor((float)Math.abs(sn)*.8f, (float)Math.abs(sn)*.2f, (float)Math.abs(sn)*.3f);
+					if( noise2d*Voxel.SIZE < vox.actualPosition[1] ) {
+						vox.turnOff();
+					}
 					
-					terrian.add(v);
+			        vox.setColor((float)Math.abs(noise3d)*.8f, (float)Math.abs(noise3d)*.2f, (float)Math.abs(noise3d)*.3f);
+			        */
+					
+					terrian.add(vox);
 				}
 			}
 		}
 	}
 	
-	public void generateMesh() {
-				
-	}
-	
 	public void applyAnimation() {
-		for(Voxel v : terrian) {
-			double sn = SimplexNoise.noise(v.position.x/10.0, v.position.y/10.0, v.position.z/10.0);//, clock.getTime());
-			
-	        if(sn < 0.3)
-	            v.turnOff();
-	        if(sn >= 0.3)
-	            v.turnOn();
+		for(Voxel vox : terrian) {
+			double noise2d = SimplexNoise.noise( vox.actualPosition[0]/10.0, vox.actualPosition[2]/10.0 );
+			double noise3d = SimplexNoise.noise( vox.actualPosition[0]/15.0, vox.actualPosition[1]/15.0, vox.actualPosition[2]/15.0);//, clock.getTime());
 	        
-	        v.setColor((float)Math.abs(sn)*.8f, (float)Math.abs(sn)*.2f, (float)Math.abs(sn)*.3f);
+			if(noise3d < 0.3) {
+				vox.turnOff();
+			}
+			if(noise3d >= 0.3) {
+				vox.turnOn();
+				if( noise2d*Voxel.SIZE < vox.actualPosition[1] ) {
+					vox.turnOff();
+				}
+			}
+			
+			/*
+			if(sn < 0.3)
+				vox.turnOff();
+	        if(sn >= 0.3)
+	        	vox.turnOn();
+	        */
+	        vox.setColor((float)Math.abs(noise3d)*.8f, (float)Math.abs(noise3d)*.2f, (float)Math.abs(noise3d)*.3f);
 		}
 	}
 	
 	public void render() {
-		generateMesh();
 		
 		GL11.glPushMatrix();
         
@@ -149,16 +145,15 @@ public class WorldChunk implements Externalizable{
         
         for(Voxel vox : terrian) {
         	
-        	if(vox.shouldRender()) {
-        		GL11.glColor4f(vox.color.r, vox.color.g, vox.color.b, 1.0f);
+        	if(vox.shouldRender) {
+        		Vector3f voxPosition = new Vector3f( (vox.position[0]*Voxel.SIZE)+origin[0], (vox.position[1]*Voxel.SIZE)+origin[1], (vox.position[2]*Voxel.SIZE)+origin[2] );
+        		GL11.glColor4f(vox.color[0], vox.color[1], vox.color[2], 1.0f);
         		vertexBuffer.clear();
-        		vertexBuffer.put( vox.mesh.vertices );
+        		vertexBuffer.put( Mesh.getVertices(voxPosition) );
                 
                 vertexBuffer.rewind();
-                Mesh.normalBuffer.rewind();
-                Mesh.texBuffer.rewind();
-                GL11.glNormalPointer(0, Mesh.normalBuffer);
-                GL11.glTexCoordPointer(2, 0, Mesh.texBuffer);
+                GL11.glNormalPointer(0, Mesh.getNormalBuffer());
+                GL11.glTexCoordPointer(2, 0, Mesh.getTexBuffer());
                 GL11.glVertexPointer(3, 0, vertexBuffer);
                 GL11.glDrawArrays(GL11.GL_QUADS, 0, 24);
         	}
