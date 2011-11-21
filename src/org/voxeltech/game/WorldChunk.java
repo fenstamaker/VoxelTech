@@ -1,9 +1,6 @@
 package org.voxeltech.game;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -146,7 +143,7 @@ public class WorldChunk implements Externalizable{
         for(Voxel vox : terrian) {
         	
         	if(vox.shouldRender) {
-        		Vector3f voxPosition = new Vector3f( (vox.position[0]*Voxel.SIZE)+origin[0], (vox.position[1]*Voxel.SIZE)+origin[1], (vox.position[2]*Voxel.SIZE)+origin[2] );
+        		Vector3f voxPosition = new Vector3f( vox.actualPosition[0], vox.actualPosition[1], vox.actualPosition[2] );
         		GL11.glColor4f(vox.color[0], vox.color[1], vox.color[2], 1.0f);
         		vertexBuffer.clear();
         		vertexBuffer.put( Mesh.getVertices(voxPosition) );
@@ -175,8 +172,12 @@ public class WorldChunk implements Externalizable{
 		
 		terrian = new TerrianList<Voxel>();
 		
-		while(in.available() > 0) {
-			terrian.add((Voxel)in.readObject());
+		while(true) {
+			try {
+				terrian.add((Voxel)in.readObject());
+			} catch(Exception e) {
+				break;
+			}
 		}
 		
 	}
@@ -188,7 +189,7 @@ public class WorldChunk implements Externalizable{
 		out.writeInt(coordinates[2]);
 		
 		for(Voxel vox : terrian) {
-			out.writeObject(vox);		
+			out.writeObject(vox);
 		}
 	}
 	

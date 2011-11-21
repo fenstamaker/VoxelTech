@@ -31,6 +31,7 @@ public class WorldChunkHandler {
 	
 	public ArrayList<WorldChunk> loadChunks() {
 		ArrayList<WorldChunk> chunkHolder = new ArrayList<WorldChunk>();
+		chunkHolder.clear();
 		
 		for(Integer[] i : chunks) {
 			
@@ -38,7 +39,7 @@ public class WorldChunkHandler {
 			int y = i[1];
 			int z = i[2];
 			
-			String filename = System.getProperty("user.dir") + "VT_CHUNK_" + x + "_" + y + "_" + z;
+			String filename = System.getProperty("user.dir") + "/../world/VT_CHUNK_" + x + "_" + y + "_" + z;
 			file = new File(filename);
 
 			WorldChunk chunk = null;
@@ -51,9 +52,10 @@ public class WorldChunkHandler {
 					bufferOut = new BufferedOutputStream(fileOut);
 					objectOut = new ObjectOutputStream(bufferOut);
 
-					chunk = generateChunk(x, y, z);
-
+					chunk = new WorldChunk(x, y, z);
 					objectOut.writeObject(chunk);
+					chunkHolder.add(chunk);
+					
 					objectOut.close();
 					bufferOut.close();
 					fileOut.close();
@@ -68,8 +70,9 @@ public class WorldChunkHandler {
 					fileIn = new FileInputStream(file);
 					bufferIn = new BufferedInputStream(fileIn);
 					objectIn = new ObjectInputStream(bufferIn);
-
+					
 					chunk = (WorldChunk)objectIn.readObject();
+					chunkHolder.add( chunk );
 
 					objectIn.close();
 					bufferIn.close();
@@ -80,10 +83,9 @@ public class WorldChunkHandler {
 				}
 
 			}
-			
-			chunkHolder.add(chunk);
-			
 		}
+
+		System.out.println(chunkHolder.size());
 		
 		/*
 		for(Integer[] i : chunks) {
