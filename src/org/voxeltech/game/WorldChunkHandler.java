@@ -3,10 +3,18 @@ package org.voxeltech.game;
 import java.io.*;
 import java.lang.Thread;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class WorldChunkHandler {
+public class WorldChunkHandler implements Runnable{
+
+	private final static int turn = 0;
+	private final static int opTurn = 1;
 
 	private ArrayList<Integer[]> chunks;
+	private int[] previousChunk;
+	private ThreadHandler threadHandler = ThreadHandler.INSTANCE;
+	
+	private Thread thread;
 	
 	private FileInputStream fileIn;
 	private FileOutputStream fileOut;
@@ -18,7 +26,8 @@ public class WorldChunkHandler {
 	private BufferedInputStream bufferIn;
 	
 	public WorldChunkHandler() {
-		chunks = new ArrayList<Integer[]>();		
+		thread = new Thread(this);
+		thread.start();
 	}
 	
 	public WorldChunk generateChunk(float x, float y, float z) {
@@ -32,7 +41,7 @@ public class WorldChunkHandler {
 	public ArrayList<WorldChunk> loadChunks() {
 		ArrayList<WorldChunk> chunkHolder = new ArrayList<WorldChunk>();
 		chunkHolder.clear();
-		
+		/*
 		for(Integer[] i : chunks) {
 			
 			int x = i[0];
@@ -84,14 +93,12 @@ public class WorldChunkHandler {
 
 			}
 		}
-
-		System.out.println(chunkHolder.size());
 		
-		/*
+		*/
 		for(Integer[] i : chunks) {
 			chunkHolder.add(generateChunk(i[0], i[1], i[2]));
 		}
-		*/
+		
 		
 		return chunkHolder;
 	}
@@ -117,6 +124,48 @@ public class WorldChunkHandler {
 		
 		return loadChunks();
 
+	}
+	
+	public void run() {
+		chunks = new ArrayList<Integer[]>();
+		
+		threadHandler.setFlag(turn, true);
+		threadHandler.setTurn(opTurn);
+		
+		while( threadHandler.flag[opTurn] && threadHandler.turn == opTurn ) {
+			System.out.println("WorldChunkHandler: HALT");
+		}
+		System.out.println("WorldChunkHandler: PROCEED");
+		previousChunk = threadHandler.getPosition();
+		threadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
+		threadHandler.setUpdate(true);
+		
+		threadHandler.setFlag(turn, false);
+		
+		while(true) {
+			int[] tempPos = threadHandler.getPosition();
+			if( !Arrays.equals(previousChunk, tempPos) ) {
+				threadHandler.setFlag(turn, true);
+				threadHandler.setTurn(opTurn);
+				
+				while( threadHandler.flag[opTurn] && threadHandler.turn == opTurn ) {
+					System.out.println("WorldChunkHandler: HALT");
+				}
+				System.out.println("WorldChunkHandler: PROCEED");
+				
+				previousChunk = threadHandler.getPosition();
+				threadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
+				threadHandler.setUpdate(true);
+				
+				threadHandler.setFlag(turn, false);
+			} else {
+				threadHandler.setUpdate(false);
+			}
+		}
+	}
+	
+	public void stop() {
+		thread.stop();
 	}
 	
 }

@@ -83,6 +83,7 @@ public class MainWindow extends Game {
 	    camera.update();
 
 	    world.setPlayerLocation(-1.0f*camera.position.x, -1.0f*camera.position.y, -1.0f*camera.position.z);
+	    world.loadChunksAroundPlayer();
 
 	    // Clear screen and depth buffer
 	    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -90,6 +91,7 @@ public class MainWindow extends Game {
 
 	    Display.update();
 	}
+	world.destroy();
 	Display.destroy();
 
     }

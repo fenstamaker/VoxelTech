@@ -10,6 +10,9 @@ import org.voxeltech.noise.*;
 import org.voxeltech.utils.*;
 
 public class World {
+
+	private final static int turn = 1;
+	private final static int opTurn = 0;
 	
 	public final static int h_NUMBER_LOAD_CHUNKS = 3;
 	public final static int h_NUMBER_RENDER_CHUNKS = 2;
@@ -63,13 +66,16 @@ public class World {
 	private Vector3f playerLocation;
 	private int[] chunkPlayerIsIn;
 	private WorldChunkHandler chunkHandler;
+	private ThreadHandler threadHandler;
 
 	public World() {
+		threadHandler = ThreadHandler.INSTANCE;
 		renderedChunks = new ArrayList<WorldChunk>();
 		loadedChunks = new ArrayList<WorldChunk>();
 		chunkHandler = new WorldChunkHandler();
-		
+
 		setPlayerLocation(0, 0, 0);
+		
 	}
 	
 	public void setPlayerLocation(float x, float y, float z) {
@@ -80,23 +86,47 @@ public class World {
 		
 		if(!Arrays.equals(chunkPlayerIsIn, newChunkLocation)) {
 			chunkPlayerIsIn = newChunkLocation;
-			loadChunksAroundPlayer();
+			threadHandler.setPosition(chunkPlayerIsIn);
 		}
 		
 	}
 	
 	public void loadChunksAroundPlayer() {
-		renderedChunks.clear();
-		renderer.clearChunks(); 
 		
-		renderedChunks.addAll(chunkHandler.loadChunksAroundChunk(chunkPlayerIsIn[0], chunkPlayerIsIn[1], chunkPlayerIsIn[2]));
-		
-		renderer.addChunks(renderedChunks);
+		if( threadHandler.shouldUpdate  ) {
+			System.out.println("World: Chunk Update Available");
+			
+			threadHandler.setFlag(turn, true);
+			threadHandler.setTurn(opTurn);
+			
+			if( !threadHandler.flag[opTurn] && threadHandler.turn != opTurn ) {
+				System.out.println("World: PROCEED");
+				renderedChunks.clear();
+				renderer.clearChunks(); 
+				System.out.println("World.java");
+				
+				renderedChunks.addAll( threadHandler.getChunks() );
+				
+				renderer.addChunks(renderedChunks);
+				
+				threadHandler.releaseLock();
+				threadHandler.setUpdate(false);
 
+				System.out.println("World: FINISHED");
+			} else {
+				System.out.println(Boolean.toString(threadHandler.getFlag(opTurn)) + threadHandler.getTurn());
+			}
+			
+		}
+		
 	}
 	
 	public void addChunksToRenderer() {
 		renderer.addChunks(renderedChunks);
+	}
+
+	public void destroy() {
+		chunkHandler.stop();
 	}
 	
 }
