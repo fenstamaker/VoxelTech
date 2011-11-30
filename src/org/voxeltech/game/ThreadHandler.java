@@ -1,8 +1,8 @@
 package org.voxeltech.game;
-
 import java.util.ArrayList;
 
 import org.lwjgl.util.vector.*;
+import org.voxeltech.game.*;
 
 public enum ThreadHandler {
 	INSTANCE;

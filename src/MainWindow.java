@@ -11,34 +11,22 @@ import org.voxeltech.graphics.*;
  */
 public class MainWindow extends AbstractWindow {
 
-    WorldChunkHandler chunkHandler = new WorldChunkHandler();
-    ThreadHandler threadHandler = ThreadHandler.INSTANCE;
-    Game game = new Game();
+    public ThreadHandler threadHandler = ThreadHandler.INSTANCE;
+    public Game game = new Game(threadHandler);
+    public WorldChunkHandler chunkHandler = new WorldChunkHandler(threadHandler);
     
     public MainWindow(int _displayHeight, int _displayWidth) {
     	super(_displayHeight, _displayWidth);
     }
 
     public static void main(String[] args) {
-    	MainWindow window = new MainWindow(800, 600);
+    	MainWindow window = new MainWindow(600, 800);
     	window.startDisplayLoop();
     }
     
     public void startDisplayLoop() {
-		
     	game.start();
-	
-		while(!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-			
-			game.loop();
-			
-			renderer.render();
-		    Display.update();
-		}
-		
-		game.destroy();
-		Display.destroy();
-		
+    	game.run();
     }
 
 }

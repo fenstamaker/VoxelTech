@@ -15,8 +15,6 @@ public abstract class AbstractWindow {
 	public int displayHeight;
 	public int displayWidth;
 	
-	public Renderer renderer;
-	
 	public AbstractWindow(int _displayHeight, int _displayWidth) {
 		displayHeight = _displayHeight;
 		displayWidth = _displayWidth;
@@ -27,9 +25,7 @@ public abstract class AbstractWindow {
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(0);
-		}
-		
-		renderer = new Renderer();		
+		}	
 	}
 	
 	public void destroy() {

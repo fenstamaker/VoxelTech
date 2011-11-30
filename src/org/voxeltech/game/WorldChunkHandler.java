@@ -12,7 +12,7 @@ public class WorldChunkHandler implements Runnable{
 
 	private ArrayList<Integer[]> chunks;
 	private int[] previousChunk;
-	private ThreadHandler threadHandler = ThreadHandler.INSTANCE;
+	private ThreadHandler threadHandler;
 	
 	private Thread thread;
 	
@@ -25,7 +25,8 @@ public class WorldChunkHandler implements Runnable{
 	private BufferedOutputStream bufferOut;
 	private BufferedInputStream bufferIn;
 	
-	public WorldChunkHandler() {
+	public WorldChunkHandler(ThreadHandler _threadHandler) {
+		threadHandler = _threadHandler;
 		thread = new Thread(this);
 		thread.start();
 	}
@@ -128,6 +129,7 @@ public class WorldChunkHandler implements Runnable{
 	
 	public void run() {
 		chunks = new ArrayList<Integer[]>();
+		previousChunk = threadHandler.getPosition();
 		
 		threadHandler.setFlag(turn, true);
 		threadHandler.setTurn(opTurn);
