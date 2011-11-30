@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
@@ -15,14 +16,10 @@ public class Renderer {
 	private ArrayList<Voxel> objects = new ArrayList<Voxel>();
 	private ArrayList<WorldChunk> chunks = new ArrayList<WorldChunk>();
 	
-	private Renderer() {
-		
-	}
-	
-    public void setupRenderer(int displayWidth, int displayHeight) {
+	public Renderer() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glViewport(0, 0, displayWidth, displayHeight);
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		
 		// Makes blocks "solid" looking
 		GL11.glClearDepth(1.0f); // Depth Buffer Setup
@@ -34,7 +31,7 @@ public class Renderer {
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GLU.gluPerspective(65.0f, ((float)displayWidth/(float)displayHeight), 1.0f, 100.0f);
+		GLU.gluPerspective(65.0f, ((float)Display.getWidth()/(float)Display.getHeight()), 1.0f, 100.0f);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glShadeModel(GL11.GL_FLAT);
 		GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // Make background white
@@ -45,7 +42,7 @@ public class Renderer {
 		FloatBuffer lightOverallAmbient = BufferUtils.createFloatBuffer(4);
 		lightOverallAmbient.put(new float[] {5.5f, 5.5f, 5.5f, 1.0f} );
 		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, (FloatBuffer)lightOverallAmbient.flip());
-    }
+	}
 
     public void addObject(Voxel obj) {
     	objects.add(obj);
@@ -73,13 +70,5 @@ public class Renderer {
 			chunks.get(i).render();
 		}
     }
-    
-    public static Renderer getInstance() {
-		return RendererHolder.INSTANCE;
-	}
-	
-	private static class RendererHolder {
-		private static final Renderer INSTANCE = new Renderer();
-	}
 
 }

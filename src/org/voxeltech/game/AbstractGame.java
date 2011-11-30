@@ -10,10 +10,7 @@ import org.voxeltech.audio.*;
 import org.voxeltech.graphics.*;
 import org.voxeltech.utils.*;
 
-public abstract class Game {
-	
-	public int displayHeight;
-	public int displayWidth;
+public abstract class AbstractGame {
 	
 	protected float dx = 0f;
 	protected float dy = 0f;
@@ -23,46 +20,24 @@ public abstract class Game {
 	
 	protected ProgramClock clock;
 	protected AudioController audio;
-	protected Renderer renderer;
 	protected CameraController camera;
 	
-	public Game(int _displayHeight, int _displayWidth) {
-		displayHeight = _displayHeight;
-		displayWidth = _displayWidth;
-		
-		setupDisplay();
-		
+	public AbstractGame() {	
 		clock = ProgramClock.getInstance();
 		audio = new AudioController();
-		renderer = Renderer.getInstance();
-		renderer.setupRenderer(displayWidth, displayHeight);
 		camera = new CameraController(0, 0, 0);
-	}
-
-	
-	protected void setupDisplay() {
-		
-		try {
-			Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
-			Display.create();
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-		
 	}
 	
 	public void start() {
-		setupGame();
+		setup();
 		clock.startClock();
-		gameLoop();
 	}
 
 	public void destroy() {
-		Display.destroy();
+		
 	}
 	
-	public abstract void setupGame();
-	public abstract void gameLoop();
+	public abstract void setup();
+	public abstract void loop();
 
 }

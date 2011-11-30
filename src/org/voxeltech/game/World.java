@@ -1,5 +1,6 @@
 package org.voxeltech.game;
 
+import java.lang.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -9,7 +10,7 @@ import org.voxeltech.graphics.*;
 import org.voxeltech.noise.*;
 import org.voxeltech.utils.*;
 
-public class World {
+public class World implements Runnable {
 
 	private final static int turn = 1;
 	private final static int opTurn = 0;
@@ -19,43 +20,7 @@ public class World {
 	public final static int v_NUMBER_LOAD_CHUNKS = 3;
 	public final static int v_NUMBER_RENDER_CHUNKS = 1;
 	public final static int[] h_CHUNKS_TO_LOAD = {};
-	public final static int[] v_CHUNKS_TO_LOAD = {};
-	
-	// x, y, z modifiers
-	public final static int[][] CHUNKS_TO_RENDER = { { 0,  0,  0}, 
-
-													 { 0, -1,  0},
-		
-													 { 1,  0,  0},
-													 {-1,  0,  0}, 
-													 
-													 { 1, -1,  0},
-													 
-													 {-1, -1,  0},
-													 
-													 { 0,  0,  1}, 
-													 { 0,  0, -1},
-													  
-													 { 0, -1,  1}, 
-													  
-													 { 0, -1, -1},
-													 
-													 { 0, -2,  0},
-		
-													 { 2,  0,  0},
-													 {-2,  0,  0}, 
-													 
-													 { 2, -2,  0},
-													 
-													 {-2, -2,  0},
-													 
-													 { 0,  0,  2}, 
-													 { 0,  0, -2},
-													 
-													 { 0, -2,  2}, 
-													 
-													 { 0, -2, -2}    };
-	
+	public final static int[] v_CHUNKS_TO_LOAD = {};	
 	
 	public final static int VERTICAL_LIMIT = 2;
 
@@ -127,6 +92,12 @@ public class World {
 
 	public void destroy() {
 		chunkHandler.stop();
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
