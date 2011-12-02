@@ -9,7 +9,7 @@ import org.voxeltech.game.*;
 import org.voxeltech.graphics.*;
 
 
-public class Game extends AbstractGame implements Runnable {
+public class Game extends AbstractGame {
 	
 	public final static int turn = 1;
 	public final static int opTurn = 0;
@@ -106,18 +106,17 @@ public class Game extends AbstractGame implements Runnable {
 			ThreadHandler.setFlag(turn, true);
 			ThreadHandler.setTurn(opTurn);
 			
-			if( !ThreadHandler.flag[opTurn] && ThreadHandler.turn != opTurn ) {
+			if( !ThreadHandler.flag[opTurn] || ThreadHandler.turn != opTurn ) {
 				System.out.println("World: PROCEED");
 				Renderer.clearChunks(); 
-				System.out.println("World.java");
 				
 				Renderer.addChunks( ThreadHandler.getChunks() );
 				
 				ThreadHandler.setUpdate(false);
+				ThreadHandler.setFlag(turn, false);
+				ThreadHandler.setTurn(opTurn);
 
 				System.out.println("World: FINISHED");
-			} else {
-				System.out.println(Boolean.toString(ThreadHandler.getFlag(opTurn)) + ThreadHandler.getTurn());
 			}
 			
 		}
@@ -128,7 +127,6 @@ public class Game extends AbstractGame implements Runnable {
     	world.destroy();
     }
 
-    @Override
 	public void run() {
     	super.start();
     	

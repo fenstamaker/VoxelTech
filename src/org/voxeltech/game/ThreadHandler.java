@@ -6,7 +6,7 @@ import org.voxeltech.game.*;
 
 public class ThreadHandler {
 	
-	public static int[] position;
+	public static int[] position = new int[] { 0, 0, 0 };
 	public static ArrayList<WorldChunk> chunksToLoad = new ArrayList<WorldChunk>();
 	public static boolean shouldUpdate = false;
 	

@@ -28,10 +28,12 @@ public class MainWindow extends AbstractWindow {
     	game = new Game();
         chunkHandler = new WorldChunkHandler();
     	
-    	Thread thread1 = new Thread(game);
     	Thread thread2 = new Thread(chunkHandler);
-    	thread1.start();
     	thread2.start();
+    	
+    	game.run();
+    	
+    	chunkHandler.keepRunning = false;
     }
 
 }

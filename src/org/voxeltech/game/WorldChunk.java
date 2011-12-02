@@ -106,13 +106,24 @@ public class WorldChunk implements Externalizable{
 			double noise2d = SimplexNoise.noise( vox.actualPosition[0]/10.0, vox.actualPosition[2]/10.0 );
 			double noise3d = SimplexNoise.noise( vox.actualPosition[0]/15.0, vox.actualPosition[1]/15.0, vox.actualPosition[2]/15.0);//, clock.getTime());
 	        
-			if(noise3d < 0.3) {
-				vox.turnOff();
-			}
+			float seaLevel = 5.0f;
+			
 			if(noise3d >= 0.3) {
 				vox.turnOn();
-				if( noise2d*Voxel.SIZE < vox.actualPosition[1] ) {
+				if( noise2d*WorldChunk.SIZE < vox.actualPosition[1] ) {
 					vox.turnOff();
+				}
+			} else {
+				vox.turnOff();
+				if( noise2d*WorldChunk.SIZE < vox.actualPosition[1] ) {
+					vox.turnOn();
+				}
+			}
+			
+			if( vox.actualPosition[1] > seaLevel ) {
+				vox.turnOff();
+				if( noise2d*WorldChunk.SIZE > seaLevel ) {
+					vox.turnOn();
 				}
 			}
 			
