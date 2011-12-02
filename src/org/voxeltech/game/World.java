@@ -33,9 +33,5 @@ public class World {
 		renderedChunks = new ArrayList<WorldChunk>();
 		loadedChunks = new ArrayList<WorldChunk>();	
 	}
-
-	public void destroy() {
-		chunkHandler.stop();
-	}
 	
 }

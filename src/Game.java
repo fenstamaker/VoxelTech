@@ -124,7 +124,7 @@ public class Game extends AbstractGame {
 	}
     
     public void destory() {
-    	world.destroy();
+    	
     }
 
 	public void run() {

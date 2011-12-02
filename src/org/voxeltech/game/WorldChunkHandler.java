@@ -39,6 +39,8 @@ public class WorldChunkHandler implements Runnable{
 	
 	public ArrayList<WorldChunk> loadChunks() {
 		ArrayList<WorldChunk> chunkHolder = new ArrayList<WorldChunk>();
+		ArrayList<Integer[]> regions = new ArrayList<Integer[]>();
+		ArrayList<Integer[]> foundChunks = new ArrayList<Integer[]>();
 		chunkHolder.clear();
 		
 		for(Integer[] i : chunks) {
@@ -47,20 +49,79 @@ public class WorldChunkHandler implements Runnable{
 			int y = i[1];
 			int z = i[2];
 			
-			String filename = System.getProperty("user.dir") + "/../world/VT_CHUNK_" + x + "_" + y + "_" + z;
+			int regionX = x/2;
+			int regionY = y/2;
+			int regionZ = z/2;
+			
+			regions.add(new Integer[] { regionX, regionY, regionZ } );
+			
+		}
+		
+		for(Integer[] region : regions) {
+			
+			String filename = System.getProperty("user.dir") + "/../world/VT_REGION_" + region[0] + "_" + region[1] + "_" + region[2];
 			file = new File(filename);
-
-			WorldChunk chunk = null;
-
-			if(!file.exists()) {
+			
+			if( file.exists() ) {
 
 				try {
+					fileIn = new FileInputStream(file);
+					bufferIn = new BufferedInputStream(fileIn);
+					
+					WorldChunk chunk;
+					while(true) {
+						try {
+							objectIn = new ObjectInputStream(bufferIn);
+							
+							chunk = (WorldChunk)objectIn.readObject();
+							if( chunks.contains(chunk) ) {
+								chunkHolder.add( chunk );
+								foundChunks.add( new Integer[] { chunk.coordinates[0], chunk.coordinates[1], chunk.coordinates[2] } );
+							}
+							
+							objectIn.close();
+						} catch(Exception e) {
+							break;
+						}
+					}
+					
+					bufferIn.close();
+					fileIn.close();
+				} catch(Exception e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}				
+				
+			} else {
+				try {
 					file.createNewFile();
+				} catch(Exception e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}
+			}
+		}
+
+		for(Integer[] i : chunks) {
+			
+			if( !foundChunks.contains(i) ) {
+				int x = i[0];
+				int y = i[1];
+				int z = i[2];
+				
+				int regionX = x/2;
+				int regionY = y/2;
+				int regionZ = z/2;
+				
+				String filename = System.getProperty("user.dir") + "/../world/VT_REGION_" + regionX + "_" + regionY + "_" + regionZ;
+				file = new File(filename);
+				
+				try {	
 					fileOut = new FileOutputStream(file);
 					bufferOut = new BufferedOutputStream(fileOut);
 					objectOut = new ObjectOutputStream(bufferOut);
-
-					chunk = new WorldChunk(x, y, z);
+	
+					WorldChunk chunk = new WorldChunk(x, y, z);
 					objectOut.writeObject(chunk);
 					chunkHolder.add(chunk);
 					
@@ -69,35 +130,11 @@ public class WorldChunkHandler implements Runnable{
 					fileOut.close();
 				} catch(Exception e) {
 					e.printStackTrace();
-					System.exit(-1);
+					System.exit(1);
 				}
-
-			} else {
-
-				try {
-					fileIn = new FileInputStream(file);
-					bufferIn = new BufferedInputStream(fileIn);
-					objectIn = new ObjectInputStream(bufferIn);
-					
-					chunk = (WorldChunk)objectIn.readObject();
-					chunkHolder.add( chunk );
-
-					objectIn.close();
-					bufferIn.close();
-					fileIn.close();
-				} catch(Exception e) {
-					e.printStackTrace();
-					System.exit(-1);
-				}
-
 			}
-		}
-		
-		
-		for(Integer[] i : chunks) {
-			chunkHolder.add(generateChunk(i[0], i[1], i[2]));
-		}
-		
+			
+		}	
 		
 		return chunkHolder;
 	}
@@ -106,9 +143,9 @@ public class WorldChunkHandler implements Runnable{
 	public ArrayList<WorldChunk> loadChunksAroundChunk(int x, int y, int z) {
 		chunks.clear();
 		
-		for(int i = 0; i < 2; i++) {
+		for(int i = 0; i < 5; i++) {
 			for(int j = 0; j < 2; j++) {
-				for(int k = 0; k < 2; k++) {
+				for(int k = 0; k < 5; k++) {
 					chunks.add( new Integer[] { (x+i), (y+j), (z+k) } );
 					chunks.add( new Integer[] { (x+i), (y+j), (z-k) } );
 					chunks.add( new Integer[] { (x+i), (y-j), (z+k) } );
@@ -164,10 +201,6 @@ public class WorldChunkHandler implements Runnable{
 		}
 		
 		System.out.println("Stopping WorldChunkHandler...");
-	}
-	
-	public void stop() {
-		thread.stop();
 	}
 	
 }

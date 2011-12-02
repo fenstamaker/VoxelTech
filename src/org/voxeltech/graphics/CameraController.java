@@ -17,6 +17,7 @@ public class CameraController {
 	 * Holds the position of the camera
 	 */
 	public Vector3f position;
+	public Vector3f lookAtLocation;
 	
 	/** <em>yaw</em> is the left and right angle movement of the camera */
 	private float yaw;
@@ -78,6 +79,11 @@ public class CameraController {
     }
 
     public void update() {
+    	lookAtLocation = new Vector3f(  (float)Math.toDegrees(Math.asin(Math.toRadians(yaw))), 
+    									(float)Math.toDegrees(Math.asin(Math.toRadians(pitch))), 
+    									0 );
+    	lookAtLocation.normalise();
+    	
         //Rotate the pitch around the X axis
         GL11.glRotatef(pitch, 1.0f, 0.0f, 0.0f);
         //Rotate the yaw around the Y axis
