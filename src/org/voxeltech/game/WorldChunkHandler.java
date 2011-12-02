@@ -12,7 +12,6 @@ public class WorldChunkHandler implements Runnable{
 
 	private ArrayList<Integer[]> chunks;
 	private int[] previousChunk;
-	private ThreadHandler threadHandler;
 	
 	private Thread thread;
 	
@@ -25,10 +24,7 @@ public class WorldChunkHandler implements Runnable{
 	private BufferedOutputStream bufferOut;
 	private BufferedInputStream bufferIn;
 	
-	public WorldChunkHandler(ThreadHandler _threadHandler) {
-		threadHandler = _threadHandler;
-		thread = new Thread(this);
-		thread.start();
+	public WorldChunkHandler() {
 	}
 	
 	public WorldChunk generateChunk(float x, float y, float z) {
@@ -129,39 +125,39 @@ public class WorldChunkHandler implements Runnable{
 	
 	public void run() {
 		chunks = new ArrayList<Integer[]>();
-		previousChunk = threadHandler.getPosition();
+		previousChunk = ThreadHandler.getPosition();
 		
-		threadHandler.setFlag(turn, true);
-		threadHandler.setTurn(opTurn);
+		ThreadHandler.setFlag(turn, true);
+		ThreadHandler.setTurn(opTurn);
 		
-		while( threadHandler.flag[opTurn] && threadHandler.turn == opTurn ) {
+		while( ThreadHandler.flag[opTurn] && ThreadHandler.turn == opTurn ) {
 			System.out.println("WorldChunkHandler: HALT");
 		}
 		System.out.println("WorldChunkHandler: PROCEED");
-		previousChunk = threadHandler.getPosition();
-		threadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
-		threadHandler.setUpdate(true);
+		previousChunk = ThreadHandler.getPosition();
+		ThreadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
+		ThreadHandler.setUpdate(true);
 		
-		threadHandler.setFlag(turn, false);
+		ThreadHandler.setFlag(turn, false);
 		
 		while(true) {
-			int[] tempPos = threadHandler.getPosition();
+			int[] tempPos = ThreadHandler.getPosition();
 			if( !Arrays.equals(previousChunk, tempPos) ) {
-				threadHandler.setFlag(turn, true);
-				threadHandler.setTurn(opTurn);
+				ThreadHandler.setFlag(turn, true);
+				ThreadHandler.setTurn(opTurn);
 				
-				while( threadHandler.flag[opTurn] && threadHandler.turn == opTurn ) {
+				while( ThreadHandler.flag[opTurn] && ThreadHandler.turn == opTurn ) {
 					System.out.println("WorldChunkHandler: HALT");
 				}
 				System.out.println("WorldChunkHandler: PROCEED");
 				
-				previousChunk = threadHandler.getPosition();
-				threadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
-				threadHandler.setUpdate(true);
+				previousChunk = ThreadHandler.getPosition();
+				ThreadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
+				ThreadHandler.setUpdate(true);
 				
-				threadHandler.setFlag(turn, false);
+				ThreadHandler.setFlag(turn, false);
 			} else {
-				threadHandler.setUpdate(false);
+				ThreadHandler.setUpdate(false);
 			}
 		}
 	}

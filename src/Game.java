@@ -9,30 +9,25 @@ import org.voxeltech.game.*;
 import org.voxeltech.graphics.*;
 
 
-public class Game extends AbstractGame {
+public class Game extends AbstractGame implements Runnable {
 	
 	public final static int turn = 1;
 	public final static int opTurn = 0;
 	
 	public World world = new World();
-	private ThreadHandler threadHandler;
-	public Renderer renderer;
 	private Thread thread;
 
 	private Vector3f playerLocation;
 	private int[] chunkPlayerIsIn;
 	
 	
-	public Game(ThreadHandler _threadHandler) {
+	public Game() {
 		super();
-		threadHandler = _threadHandler;
 		setPlayerLocation(0, 0, 0);
-		renderer = new Renderer();
 	}
 	
 	@Override
     public void setup() {
-	    Voxel.setTexture("resources/image.png");
 	    Mouse.setGrabbed(true);
     }
 
@@ -78,8 +73,8 @@ public class Game extends AbstractGame {
 	    if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
 	    	camera.yaw(-dt * movementSpeed * 2.0f);
 	    }
-	
-	    GL11.glLoadIdentity();
+	    
+	    Renderer.loadIdentity();
 	    camera.update();
 	
 	    setPlayerLocation(-1.0f*camera.position.x, -1.0f*camera.position.y, -1.0f*camera.position.z);
@@ -98,32 +93,31 @@ public class Game extends AbstractGame {
 		
 		if(!Arrays.equals(chunkPlayerIsIn, newChunkLocation)) {
 			chunkPlayerIsIn = newChunkLocation;
-			threadHandler.setPosition(chunkPlayerIsIn);
+			ThreadHandler.setPosition(chunkPlayerIsIn);
 		}
 		
 	}
     
 	public void loadChunksAroundPlayer() {
 		
-		if( threadHandler.shouldUpdate  ) {
+		if( ThreadHandler.shouldUpdate  ) {
 			System.out.println("World: Chunk Update Available");
 			
-			threadHandler.setFlag(turn, true);
-			threadHandler.setTurn(opTurn);
+			ThreadHandler.setFlag(turn, true);
+			ThreadHandler.setTurn(opTurn);
 			
-			if( !threadHandler.flag[opTurn] && threadHandler.turn != opTurn ) {
+			if( !ThreadHandler.flag[opTurn] && ThreadHandler.turn != opTurn ) {
 				System.out.println("World: PROCEED");
-				renderer.clearChunks(); 
+				Renderer.clearChunks(); 
 				System.out.println("World.java");
 				
-				renderer.addChunks( threadHandler.getChunks() );
+				Renderer.addChunks( ThreadHandler.getChunks() );
 				
-				threadHandler.releaseLock();
-				threadHandler.setUpdate(false);
+				ThreadHandler.setUpdate(false);
 
 				System.out.println("World: FINISHED");
 			} else {
-				System.out.println(Boolean.toString(threadHandler.getFlag(opTurn)) + threadHandler.getTurn());
+				System.out.println(Boolean.toString(ThreadHandler.getFlag(opTurn)) + ThreadHandler.getTurn());
 			}
 			
 		}
@@ -134,11 +128,14 @@ public class Game extends AbstractGame {
     	world.destroy();
     }
 
+    @Override
 	public void run() {
+    	super.start();
+    	
 		while(!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {	
 			loop();
 			
-			renderer.render();
+			Renderer.render();
 		    Display.update();
 		}
 		

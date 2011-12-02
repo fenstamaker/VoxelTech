@@ -10,10 +10,9 @@ import org.voxeltech.graphics.*;
  * @author Gary Fenstamaker
  */
 public class MainWindow extends AbstractWindow {
-
-    public ThreadHandler threadHandler = ThreadHandler.INSTANCE;
-    public Game game = new Game(threadHandler);
-    public WorldChunkHandler chunkHandler = new WorldChunkHandler(threadHandler);
+	
+    public Game game;
+    public WorldChunkHandler chunkHandler;
     
     public MainWindow(int _displayHeight, int _displayWidth) {
     	super(_displayHeight, _displayWidth);
@@ -25,8 +24,14 @@ public class MainWindow extends AbstractWindow {
     }
     
     public void startDisplayLoop() {
-    	game.start();
-    	game.run();
+    	Renderer.setup();
+    	game = new Game();
+        chunkHandler = new WorldChunkHandler();
+    	
+    	Thread thread1 = new Thread(game);
+    	Thread thread2 = new Thread(chunkHandler);
+    	thread1.start();
+    	thread2.start();
     }
 
 }
