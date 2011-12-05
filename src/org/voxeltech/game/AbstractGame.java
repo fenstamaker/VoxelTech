@@ -19,12 +19,12 @@ public abstract class AbstractGame {
 	
 	protected ProgramClock clock;
 	protected AudioController audio;
-	protected Frustrum camera;
+	protected Frustum camera;
 	
 	public AbstractGame() {	
 		clock = ProgramClock.getInstance();
 		audio = new AudioController();
-		camera = new Frustrum();
+		camera = new Frustum();
 	}
 	
 	public void start() {
