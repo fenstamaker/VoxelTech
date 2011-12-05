@@ -42,14 +42,14 @@ public class ThreadHandler {
 	}
 	
 	public synchronized static ArrayList<WorldChunk> getChunks() {
-		System.out.println("ThreadHandler: Loading Chunks into World");
+		//System.out.println("ThreadHandler: Loading Chunks into World");
 		return chunksToLoad;
 	}
 	
 	public synchronized static void setChunks(ArrayList<WorldChunk> chunks) {
-		System.out.println("ThreadHandler: Loading Chunks...");
+		//System.out.println("ThreadHandler: Loading Chunks...");
 		chunksToLoad = chunks;
-		System.out.println("ThreadHandler: Finished Loading");
+		//System.out.println("ThreadHandler: Finished Loading");
 	}
 	
 	public synchronized static int[] getPosition() {

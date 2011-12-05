@@ -38,8 +38,8 @@ public class Game extends AbstractGame {
 	    dx = Mouse.getDX();
 	    dy = Mouse.getDY();
 	
-	    camera.yaw(dx * mouseSensitivity);
-	    camera.pitch(-dy * mouseSensitivity);
+	    camera.rotateHorizontal(dx);
+	    camera.rotateVertical(dy);
 	
 	    float dt = clock.getDt();
 	
@@ -62,19 +62,18 @@ public class Game extends AbstractGame {
 	    	camera.up(movementSpeed * dt);
 	    }
 	    if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-	    	camera.pitch(-dt * movementSpeed * 2.0f);
+	    	camera.rotateVertical(-dt * movementSpeed * 2.0f);
 	    }
 	    if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-	    	camera.pitch(dt * movementSpeed * 2.0f);
+	    	camera.rotateVertical(dt * movementSpeed * 2.0f);
 	    }
 	    if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-	    	camera.yaw(dt * movementSpeed * 2.0f);
+	    	camera.rotateHorizontal(dt * movementSpeed * 2.0f);
 	    }
 	    if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-	    	camera.yaw(-dt * movementSpeed * 2.0f);
+	    	camera.rotateHorizontal(-dt * movementSpeed * 2.0f);
 	    }
 	    
-	    Renderer.loadIdentity();
 	    camera.update();
 	
 	    setPlayerLocation(-1.0f*camera.position.x, -1.0f*camera.position.y, -1.0f*camera.position.z);
@@ -101,13 +100,13 @@ public class Game extends AbstractGame {
 	public void loadChunksAroundPlayer() {
 		
 		if( ThreadHandler.shouldUpdate  ) {
-			System.out.println("World: Chunk Update Available");
+			//System.out.println("World: Chunk Update Available");
 			
 			ThreadHandler.setFlag(turn, true);
 			ThreadHandler.setTurn(opTurn);
 			
 			if( !ThreadHandler.flag[opTurn] || ThreadHandler.turn != opTurn ) {
-				System.out.println("World: PROCEED");
+				//System.out.println("World: PROCEED");
 				Renderer.clearChunks(); 
 				
 				Renderer.addChunks( ThreadHandler.getChunks() );
@@ -116,7 +115,7 @@ public class Game extends AbstractGame {
 				ThreadHandler.setFlag(turn, false);
 				ThreadHandler.setTurn(opTurn);
 
-				System.out.println("World: FINISHED");
+				//System.out.println("World: FINISHED");
 			}
 			
 		}

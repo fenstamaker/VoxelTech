@@ -14,6 +14,9 @@ import org.lwjgl.util.glu.GLU;
 import org.voxeltech.game.*;
 
 public class Renderer {
+	
+	public static float nearDistance = 1.0f;
+	public static float farDistance = 100.0f;
 
 	private static ArrayList<Voxel> objects = new ArrayList<Voxel>();
 	private static ArrayList<WorldChunk> chunks = new ArrayList<WorldChunk>();
@@ -39,7 +42,7 @@ public class Renderer {
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GLU.gluPerspective(65.0f, ((float)Display.getWidth()/(float)Display.getHeight()), 1.0f, 100.0f);
+		GLU.gluPerspective(65.0f, ( (float)Display.getWidth() / (float)Display.getHeight() ), nearDistance, farDistance);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glShadeModel(GL11.GL_FLAT);
 		GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // Make background white

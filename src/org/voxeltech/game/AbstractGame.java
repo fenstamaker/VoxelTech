@@ -15,17 +15,16 @@ public abstract class AbstractGame {
 	protected float dx = 0f;
 	protected float dy = 0f;
 	
-	protected float mouseSensitivity = 0.04f;
 	protected float movementSpeed = 10.0f;
 	
 	protected ProgramClock clock;
 	protected AudioController audio;
-	protected CameraController camera;
+	protected Frustrum camera;
 	
 	public AbstractGame() {	
 		clock = ProgramClock.getInstance();
 		audio = new AudioController();
-		camera = new CameraController(0, 0, 0);
+		camera = new Frustrum();
 	}
 	
 	public void start() {

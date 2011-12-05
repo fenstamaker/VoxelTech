@@ -5,6 +5,8 @@ import java.lang.Thread;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.voxeltech.utils.*;
+
 public class WorldChunkHandler implements Runnable{
 
 	private final static int turn = 0;
@@ -12,7 +14,7 @@ public class WorldChunkHandler implements Runnable{
 
 	public volatile boolean keepRunning = true;
 	
-	private ArrayList<Integer[]> chunks;
+	private ArrayList<ChunkID> chunks;
 	private int[] previousChunk;
 	
 	private Thread thread;
@@ -37,29 +39,29 @@ public class WorldChunkHandler implements Runnable{
 		return new WorldChunk(x, y, z);
 	}
 	
+	public String generateRegionString(int x, int y, int z) {
+		return "" + x + "_" + y + "_" + z;
+	}
+	
 	public ArrayList<WorldChunk> loadChunks() {
 		ArrayList<WorldChunk> chunkHolder = new ArrayList<WorldChunk>();
-		ArrayList<Integer[]> regions = new ArrayList<Integer[]>();
-		ArrayList<Integer[]> foundChunks = new ArrayList<Integer[]>();
+		ArrayList<String> regions = new ArrayList<String>();
+		ArrayList<ChunkID> foundChunks = new ArrayList<ChunkID>();
 		chunkHolder.clear();
 		
-		for(Integer[] i : chunks) {
+		for(ChunkID i : chunks) {
+
+			String region = generateRegionString(i.x/2, i.y/2, i.z/2);
 			
-			int x = i[0];
-			int y = i[1];
-			int z = i[2];
-			
-			int regionX = x/2;
-			int regionY = y/2;
-			int regionZ = z/2;
-			
-			regions.add(new Integer[] { regionX, regionY, regionZ } );
+			if( !regions.contains(region) ) {
+				regions.add( region );
+			}
 			
 		}
 		
-		for(Integer[] region : regions) {
+		for(String region : regions) {
 			
-			String filename = System.getProperty("user.dir") + "/../world/VT_REGION_" + region[0] + "_" + region[1] + "_" + region[2];
+			String filename = System.getProperty("user.dir") + "/../world/VT_REGION_" + region;
 			file = new File(filename);
 			
 			if( file.exists() ) {
@@ -76,7 +78,7 @@ public class WorldChunkHandler implements Runnable{
 							chunk = (WorldChunk)objectIn.readObject();
 							if( chunks.contains(chunk) ) {
 								chunkHolder.add( chunk );
-								foundChunks.add( new Integer[] { chunk.coordinates[0], chunk.coordinates[1], chunk.coordinates[2] } );
+								foundChunks.add( new ChunkID( chunk.coordinates[0], chunk.coordinates[1], chunk.coordinates[2] ) );
 							}
 							
 							objectIn.close();
@@ -102,18 +104,13 @@ public class WorldChunkHandler implements Runnable{
 			}
 		}
 
-		for(Integer[] i : chunks) {
+		for(ChunkID i : chunks) {
 			
 			if( !foundChunks.contains(i) ) {
-				int x = i[0];
-				int y = i[1];
-				int z = i[2];
 				
-				int regionX = x/2;
-				int regionY = y/2;
-				int regionZ = z/2;
+				String region = generateRegionString(i.x/2, i.y/2, i.z/2);
 				
-				String filename = System.getProperty("user.dir") + "/../world/VT_REGION_" + regionX + "_" + regionY + "_" + regionZ;
+				String filename = System.getProperty("user.dir") + "/../world/VT_REGION_" + region;
 				file = new File(filename);
 				
 				try {	
@@ -121,7 +118,7 @@ public class WorldChunkHandler implements Runnable{
 					bufferOut = new BufferedOutputStream(fileOut);
 					objectOut = new ObjectOutputStream(bufferOut);
 	
-					WorldChunk chunk = new WorldChunk(x, y, z);
+					WorldChunk chunk = new WorldChunk(i.x, i.y, i.z);
 					objectOut.writeObject(chunk);
 					chunkHolder.add(chunk);
 					
@@ -143,17 +140,17 @@ public class WorldChunkHandler implements Runnable{
 	public ArrayList<WorldChunk> loadChunksAroundChunk(int x, int y, int z) {
 		chunks.clear();
 		
-		for(int i = 0; i < 5; i++) {
+		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 2; j++) {
-				for(int k = 0; k < 5; k++) {
-					chunks.add( new Integer[] { (x+i), (y+j), (z+k) } );
-					chunks.add( new Integer[] { (x+i), (y+j), (z-k) } );
-					chunks.add( new Integer[] { (x+i), (y-j), (z+k) } );
-					chunks.add( new Integer[] { (x+i), (y-j), (z-k) } );
-					chunks.add( new Integer[] { (x-i), (y+j), (z+k) } );
-					chunks.add( new Integer[] { (x-i), (y+j), (z-k) } );
-					chunks.add( new Integer[] { (x-i), (y-j), (z+k) } );
-					chunks.add( new Integer[] { (x-i), (y-j), (z-k) } );
+				for(int k = 0; k < 2; k++) {
+					chunks.add( new ChunkID( (x+i), (y+j), (z+k) ) );
+					chunks.add( new ChunkID( (x+i), (y+j), (z-k) ) );
+					chunks.add( new ChunkID( (x+i), (y-j), (z+k) ) );
+					chunks.add( new ChunkID( (x+i), (y-j), (z-k) ) );
+					chunks.add( new ChunkID( (x-i), (y+j), (z+k) ) );
+					chunks.add( new ChunkID( (x-i), (y+j), (z-k) ) );
+					chunks.add( new ChunkID( (x-i), (y-j), (z+k) ) );
+					chunks.add( new ChunkID( (x-i), (y-j), (z-k) ) );
 				}
 			}
 		}
@@ -163,16 +160,16 @@ public class WorldChunkHandler implements Runnable{
 	}
 	
 	public void run() {
-		chunks = new ArrayList<Integer[]>();
+		chunks = new ArrayList<ChunkID>();
 		previousChunk = ThreadHandler.getPosition();
 		
 		ThreadHandler.setFlag(turn, true);
 		ThreadHandler.setTurn(opTurn);
 		
 		while( ThreadHandler.flag[opTurn] && ThreadHandler.turn == opTurn ) {
-			System.out.println("WorldChunkHandler: HALT");
+			//System.out.println("WorldChunkHandler: HALT");
 		}
-		System.out.println("WorldChunkHandler: PROCEED");
+		//System.out.println("WorldChunkHandler: PROCEED");
 		previousChunk = ThreadHandler.getPosition();
 		ThreadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
 		ThreadHandler.setUpdate(true);
@@ -188,7 +185,7 @@ public class WorldChunkHandler implements Runnable{
 				
 				if( !ThreadHandler.flag[opTurn] || ThreadHandler.turn != opTurn ) {
 					
-					System.out.println("WorldChunkHandler: PROCEED");
+					//System.out.println("WorldChunkHandler: PROCEED");
 					
 					previousChunk = ThreadHandler.getPosition();
 					ThreadHandler.setChunks( loadChunksAroundChunk(previousChunk[0], previousChunk[1], previousChunk[2]) );
