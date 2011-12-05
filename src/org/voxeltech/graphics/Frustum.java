@@ -6,7 +6,15 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.*;
 
-public class Frustum {
+public enum Frustum {
+	INSTANCE;
+	
+	public static final int NEAR = 0;
+	public static final int FAR = 1;
+	public static final int RIGHT = 2;
+	public static final int LEFT = 3;
+	public static final int TOP = 4;
+	public static final int BOTTOM = 5;
 	
 	public static float nearDistance = 1.0f;
 	public static float farDistance = 100.0f;
@@ -27,24 +35,13 @@ public class Frustum {
 	private float farHeight;
 	private float farWidth;
 	
-	private Vector3f farPlaneCenter;
-	private Vector3f farPlaneTopLeft;
-	private Vector3f farPlaneTopRight;
-	private Vector3f farPlaneBottomLeft;
-	private Vector3f farPlaneBottomRight;
+	private Plane[] planes = new Plane[6];
 	
-	private Vector3f nearPlaneCenter;
-	private Vector3f nearPlaneTopLeft;
-	private Vector3f nearPlaneTopRight;
-	private Vector3f nearPlaneBottomLeft;
-	private Vector3f nearPlaneBottomRight;
-	
-	
-	public Frustum() {
-		calculateFrustum();
+	private Frustum() {
+		
 	}
 	
-	private void calculateFrustum() {
+	public void calculateFrustum() {
 		displayRatio = (float)( Display.getWidth() / Display.getHeight() );
 		
 		nearHeight = (float)(2.0 * Math.tan( Math.toRadians(fov/2.0) ) * nearDistance);
@@ -55,50 +52,61 @@ public class Frustum {
 		
 		calculateRight();
 		
-		Vector3f temp1;
-		Vector3f temp2;
-		
-		temp1 = new Vector3f(up);
-		temp1.scale(farHeight/2.0f);
-		temp2 = new Vector3f(right);
-		temp2.scale(farWidth/2.0f);
-		
-		farPlaneCenter = Vector3f.add(position, direction, null);
-		farPlaneCenter.scale(farDistance);
-		
-		farPlaneTopLeft = Vector3f.add(farPlaneCenter, temp1, null);
-		farPlaneTopLeft = Vector3f.sub(farPlaneTopLeft, temp2, null);
-		
-		farPlaneTopRight = Vector3f.add(farPlaneCenter, temp1, null);
-		farPlaneTopRight = Vector3f.add(farPlaneTopRight, temp2, null);
-		
-		farPlaneBottomLeft = Vector3f.sub(farPlaneCenter, temp1, null);
-		farPlaneBottomLeft = Vector3f.sub(farPlaneBottomLeft, temp2, null);
-
-		farPlaneBottomRight = Vector3f.sub(farPlaneCenter, temp1, null);
-		farPlaneBottomRight = Vector3f.add(farPlaneBottomRight, temp2, null);
-		
-		temp1 = new Vector3f(up);
-		temp1.scale(farHeight/2.0f);
-		temp2 = new Vector3f(right);
-		temp2.scale(farWidth/2.0f);
-		
-		nearPlaneCenter = Vector3f.add(position, direction, null);
-		nearPlaneCenter.scale(nearDistance);
-		
-		nearPlaneTopLeft = Vector3f.add(nearPlaneCenter, temp1, null);
-		nearPlaneTopLeft = Vector3f.sub(nearPlaneTopLeft, temp2, null);
-		
-		nearPlaneTopRight = Vector3f.add(nearPlaneCenter, temp1, null);
-		nearPlaneTopRight = Vector3f.add(nearPlaneTopRight, temp2, null);
-		
-		nearPlaneBottomLeft = Vector3f.sub(nearPlaneCenter, temp1, null);
-		nearPlaneBottomLeft = Vector3f.sub(nearPlaneBottomLeft, temp2, null);
-
-		nearPlaneBottomRight = Vector3f.sub(nearPlaneCenter, temp1, null);
-		nearPlaneBottomRight = Vector3f.add(nearPlaneBottomRight, temp2, null);
+		Vector3f planeNormal;
+		Vector3f planePoint;
 	
+		// Creating the nearPlane
+		planeNormal = new Vector3f(direction);
+		planePoint = new Vector3f(direction);
+		planePoint.scale(nearDistance);
+		planePoint = Vector3f.add(position, planePoint, null);
+		planes[NEAR] = new Plane(planeNormal, planePoint);
+	
+		// Creating the farPlane
+		planeNormal = new Vector3f(direction);
+		planeNormal.negate();
+		planePoint = new Vector3f(direction);
+		planePoint.scale(farDistance);
+		planePoint = Vector3f.add(position, planePoint, null);
+		planes[FAR] = new Plane(planeNormal, planePoint);
 		
+		// Creating the rightPlane
+		planeNormal = new Vector3f(right);
+		planeNormal.negate();
+		planePoint = new Vector3f(position);
+		planes[RIGHT] = new Plane(planeNormal, planePoint);
+	
+		// Creating the leftPlane
+		planeNormal = new Vector3f(right);
+		planePoint = new Vector3f(position);
+		planes[LEFT] = new Plane(planeNormal, planePoint);
+		
+		// Creating the topPlane
+		planeNormal = new Vector3f(up);
+		planeNormal.negate();
+		planePoint = new Vector3f(position);
+		planes[TOP] = new Plane(planeNormal, planePoint);
+	
+		// Creating the bottomPlane
+		planeNormal = new Vector3f(up);
+		planePoint = new Vector3f(position);
+		planes[BOTTOM] = new Plane(planeNormal, planePoint);
+	}
+	
+	public boolean isInFrustum(Voxel voxel) {
+		float radius = (float)( Math.sqrt(2.0) * Voxel.SIZE );
+		Vector3f center = new Vector3f(voxel.actualPosition[0], voxel.actualPosition[1], voxel.actualPosition[2]);
+		center = Vector3f.add( center, new Vector3f(radius, radius, radius), null );
+		
+		float distance;
+		for(int i = 0; i < planes.length; i++) {
+			distance = planes[i].getDistance(center);
+			if( distance < -radius ) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	private void calculateRight() {
@@ -160,8 +168,7 @@ public class Frustum {
     }	
 	
 	public void update() {
-		direction.normalise();
-		right = Vector3f.cross(direction, up, null);
+		calculateFrustum();
 		
 		GL11.glLoadIdentity();
 

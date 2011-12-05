@@ -21,6 +21,7 @@ public class WorldChunk implements Externalizable{
 	public final static int SIZE = 10;
 
 	private ProgramClock clock = ProgramClock.getInstance();	
+    private Frustum frustum = Frustum.INSTANCE;
 	private TerrianList<Voxel> terrian;
 	
 	/**
@@ -84,16 +85,6 @@ public class WorldChunk implements Externalizable{
 					
 					Voxel vox = new Voxel(i, j, k);
 					vox.setActualPosition((i*Voxel.SIZE+origin[0]), (j*Voxel.SIZE+origin[1]), (k*Voxel.SIZE+origin[2]));
-					/*
-					double noise2d = SimplexNoise.noise( vox.actualPosition[0]/10.0, vox.actualPosition[2]/10.0 );
-					double noise3d = SimplexNoise.noise( vox.actualPosition[0]/10.0, vox.actualPosition[1]/10.0, vox.actualPosition[2]/10.0);//, clock.getTime());
-			        
-					if( noise2d*Voxel.SIZE < vox.actualPosition[1] ) {
-						vox.turnOff();
-					}
-					
-			        vox.setColor((float)Math.abs(noise3d)*.8f, (float)Math.abs(noise3d)*.2f, (float)Math.abs(noise3d)*.3f);
-			        */
 					
 					terrian.add(vox);
 				}
@@ -126,13 +117,6 @@ public class WorldChunk implements Externalizable{
 					vox.turnOn();
 				}
 			}
-			
-			/*
-			if(sn < 0.3)
-				vox.turnOff();
-	        if(sn >= 0.3)
-	        	vox.turnOn();
-	        */
 	        vox.setColor((float)Math.abs(noise3d)*.8f, (float)Math.abs(noise3d)*.2f, (float)Math.abs(noise3d)*.3f);
 		}
 	}
@@ -153,7 +137,7 @@ public class WorldChunk implements Externalizable{
         
         for(Voxel vox : terrian) {
         	
-        	if(vox.shouldRender) {
+        	if( vox.shouldRender && frustum.isInFrustum(vox) ) {
         		Vector3f voxPosition = new Vector3f( vox.actualPosition[0], vox.actualPosition[1], vox.actualPosition[2] );
         		GL11.glColor4f(vox.color[0], vox.color[1], vox.color[2], 1.0f);
         		vertexBuffer.clear();

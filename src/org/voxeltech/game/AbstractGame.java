@@ -24,7 +24,8 @@ public abstract class AbstractGame {
 	public AbstractGame() {	
 		clock = ProgramClock.getInstance();
 		audio = new AudioController();
-		camera = new Frustum();
+		camera = Frustum.INSTANCE;
+		camera.calculateFrustum();
 	}
 	
 	public void start() {
