@@ -76,7 +76,7 @@ public class Game extends AbstractGame {
 	    
 	    camera.update();
 	
-	    setPlayerLocation(-1.0f*camera.position.x, -1.0f*camera.position.y, -1.0f*camera.position.z);
+	    setPlayerLocation(camera.position.x, camera.position.y, camera.position.z);
 	    loadChunksAroundPlayer();
 	    Renderer.render();
 	

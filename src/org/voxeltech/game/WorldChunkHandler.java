@@ -140,9 +140,9 @@ public class WorldChunkHandler implements Runnable{
 	public ArrayList<WorldChunk> loadChunksAroundChunk(int x, int y, int z) {
 		chunks.clear();
 		
-		for(int i = 0; i < 2; i++) {
+		for(int i = 0; i < 3; i++) {
 			for(int j = 0; j < 2; j++) {
-				for(int k = 0; k < 2; k++) {
+				for(int k = 0; k < 3; k++) {
 					chunks.add( new ChunkID( (x+i), (y+j), (z+k) ) );
 					chunks.add( new ChunkID( (x+i), (y+j), (z-k) ) );
 					chunks.add( new ChunkID( (x+i), (y-j), (z+k) ) );

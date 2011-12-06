@@ -16,7 +16,7 @@ public class Plane {
 		
 		normal = Vector3f.cross(v, u, null);
 		normal.normalise();
-		D = -1 * Vector3f.dot(normal, point);
+		D = Vector3f.dot(normal, point);
 	}
 	
 	public Plane(Vector3f _normal, Vector3f _point) {
@@ -24,12 +24,12 @@ public class Plane {
 		point = _point;
 		normal.normalise();
 
-		D = -1 * Vector3f.dot(normal, point);
+		D = Vector3f.dot(normal, point);
 	}
 	
 	public float getDistance(Vector3f p0) {
 		normal.normalise();
-		return Vector3f.dot(normal, p0) + D;
+		return Vector3f.dot(normal, p0) - D;
 	}
 	
 }
