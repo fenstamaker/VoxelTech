@@ -49,12 +49,46 @@ public enum Frustum {
 		
 		farHeight = (float)(2.0 * Math.tan( Math.toRadians(fov/2.0) ) * farDistance);
 		farWidth = farHeight * displayRatio;
+		System.out.println(farHeight + "x" + farWidth);
 		
 		calculateRight();
 		
 		Vector3f planeNormal;
 		Vector3f planePoint;
-	
+		
+		Vector3f farCenter, nearCenter, X, Y, Z;
+		
+		Z = Vector3f.sub(position, direction, null);
+		Z.normalise();
+		
+		X = Vector3f.cross(up, Z, null);
+		X.normalise();
+		
+		Y = Vector3f.cross(Z, X, null);
+		
+		nearCenter = new Vector3f(direction);
+		nearCenter.scale(nearDistance);
+		nearCenter = Vector3f.add(nearCenter, position, null);
+		
+		farCenter = new Vector3f(direction);
+		farCenter.scale(farDistance);
+		farCenter = Vector3f.add(farCenter, position, null);
+		
+		planes[NEAR] = new Plane( (Vector3f)Z.negate(), nearCenter);
+		planes[FAR] = new Plane(Z, farCenter);
+		
+		planeNormal = new Vector3f(Y);
+		planeNormal.scale(nearHeight);
+		planeNormal = Vector3f.add(nearCenter, planeNormal, null);
+		planeNormal = Vector3f.sub(planeNormal, position, null);
+		planeNormal.normalise();
+		planeNormal = Vector3f.cross(planeNormal, X, null);
+		
+		planePoint = new Vector3f(Y);
+		planePoint.scale(nearHeight);
+		planePoint = Vector3f.add(nearCenter, planePoint, null);
+		planes[TOP] = new Plane(planeNormal, planePoint);
+		
 		// Creating the nearPlane
 		planeNormal = new Vector3f(direction);
 		planePoint = new Vector3f(direction);
@@ -70,38 +104,17 @@ public enum Frustum {
 		planePoint = Vector3f.add(position, planePoint, null);
 		planes[FAR] = new Plane(planeNormal, planePoint);
 		
-		// Creating the rightPlane
-		planeNormal = new Vector3f(right);
-		planeNormal.negate();
-		planePoint = new Vector3f(position);
-		planes[RIGHT] = new Plane(planeNormal, planePoint);
-	
-		// Creating the leftPlane
-		planeNormal = new Vector3f(right);
-		planePoint = new Vector3f(position);
-		planes[LEFT] = new Plane(planeNormal, planePoint);
 		
-		// Creating the topPlane
-		planeNormal = new Vector3f(up);
-		planeNormal.negate();
-		planePoint = new Vector3f(position);
-		planes[TOP] = new Plane(planeNormal, planePoint);
-	
-		// Creating the bottomPlane
-		planeNormal = new Vector3f(up);
-		planePoint = new Vector3f(position);
-		planes[BOTTOM] = new Plane(planeNormal, planePoint);
 	}
 	
 	public boolean isInFrustum(Voxel voxel) {
-		float radius = (float)( Math.sqrt(2.0) * Voxel.SIZE );
 		Vector3f center = new Vector3f(voxel.actualPosition[0], voxel.actualPosition[1], voxel.actualPosition[2]);
-		center = Vector3f.add( center, new Vector3f(radius, radius, radius), null );
 		
 		float distance;
 		for(int i = 0; i < planes.length; i++) {
 			distance = planes[i].getDistance(center);
-			if( distance < -radius ) {
+			//System.out.println(distance);
+			if( -distance < -Voxel.RAIDUS ) {
 				return false;
 			}
 		}

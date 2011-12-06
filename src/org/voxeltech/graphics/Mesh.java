@@ -14,7 +14,7 @@ public class Mesh {
 	public static FloatBuffer getNormalBuffer() {
 		if(normalBuffer == null) {
 			float[] n = {
-					0.0f, 0.0f,  1.0f, // Front Face
+					0.0f, 0.0f, 1.0f, // Front Face
 					0.0f, 0.0f, -1.0f, //Back Face
 					0.0f, 1.0f, 0.0f, // Top Face
 					0.0f, -1.0f, 0.0f, // Bottom Face
@@ -52,40 +52,40 @@ public class Mesh {
 	public static float[] getVertices(Vector3f position) {
 			float[] v = {
 						// Front Face - {Bottom Left}, {Bottom Right}, {Top Right}, {Top Left}
-						position.x, position.y, position.z,
-						position.x+Voxel.SIZE, position.y, position.z,
-						position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z,  
-						position.x, position.y+Voxel.SIZE, position.z,
+						position.x - Voxel.HALF, position.y - Voxel.HALF, position.z + Voxel.HALF,
+						position.x + Voxel.HALF, position.y - Voxel.HALF, position.z + Voxel.HALF,
+						position.x + Voxel.HALF, position.y + Voxel.HALF, position.z + Voxel.HALF,
+						position.x - Voxel.HALF, position.y + Voxel.HALF, position.z + Voxel.HALF,
 
 						// Back Face - {Bottom Right}, {Top Right}, {Top Left}, {Bottom Left}
-						position.x, position.y, position.z-Voxel.SIZE,
-						position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE,
-						position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE,  
-						position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE,
+						position.x + Voxel.HALF, position.y - Voxel.HALF, position.z - Voxel.HALF,
+						position.x + Voxel.HALF, position.y + Voxel.HALF, position.z - Voxel.HALF,
+						position.x - Voxel.HALF, position.y + Voxel.HALF, position.z - Voxel.HALF,
+						position.x - Voxel.HALF, position.y - Voxel.HALF, position.z - Voxel.HALF,
 
 						// Top Face - {Top Left}, {Bottom Left}, {Bottom Right}, {Top Right}
-						position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE, 
-						position.x, position.y+Voxel.SIZE, position.z,
-						position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z,
-						position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE,
+						position.x - Voxel.HALF, position.y + Voxel.HALF, position.z - Voxel.HALF,
+						position.x - Voxel.HALF, position.y + Voxel.HALF, position.z + Voxel.HALF,
+						position.x + Voxel.HALF, position.y + Voxel.HALF, position.z + Voxel.HALF,
+						position.x + Voxel.HALF, position.y + Voxel.HALF, position.z - Voxel.HALF,
 
 						// Bottom Face - {Top Right}, {Top Left}, {Bottom Left}, {Bottom Right}
-						position.x, position.y, position.z-Voxel.SIZE,
-						position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE,
-						position.x+Voxel.SIZE, position.y, position.z, 
-						position.x, position.y, position.z,
+						position.x + Voxel.HALF, position.y - Voxel.HALF, position.z + Voxel.HALF,
+						position.x - Voxel.HALF, position.y - Voxel.HALF, position.z + Voxel.HALF,
+						position.x - Voxel.HALF, position.y - Voxel.HALF, position.z - Voxel.HALF,
+						position.x + Voxel.HALF, position.y - Voxel.HALF, position.z - Voxel.HALF,
 
-						// Right face - {Bottom Right}, {Top Right}, {Top Left}, {Bototm Left}
-						position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE,
-						position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE,
-						position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z,
-						position.x+Voxel.SIZE, position.y, position.z,
+						// Right face - {Bottom Right}, {Top Right}, {Top Left}, {Bottom Left}
+						position.x + Voxel.HALF, position.y - Voxel.HALF, position.z - Voxel.HALF,
+						position.x + Voxel.HALF, position.y + Voxel.HALF, position.z - Voxel.HALF,
+						position.x + Voxel.HALF, position.y + Voxel.HALF, position.z + Voxel.HALF,
+						position.x + Voxel.HALF, position.y - Voxel.HALF, position.z + Voxel.HALF,
 
 						// Left Face - {Bottom Left}, {Bottom Right}, {Top Right}, {Top Left}
-						position.x, position.y, position.z-Voxel.SIZE,
-						position.x, position.y, position.z,
-						position.x, position.y+Voxel.SIZE, position.z,
-						position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE
+						position.x - Voxel.HALF, position.y - Voxel.HALF, position.z - Voxel.HALF,
+						position.x - Voxel.HALF, position.y - Voxel.HALF, position.z + Voxel.HALF,
+						position.x - Voxel.HALF, position.y + Voxel.HALF, position.z + Voxel.HALF,
+						position.x - Voxel.HALF, position.y + Voxel.HALF, position.z - Voxel.HALF,
 					};
 
 			return v;
@@ -100,34 +100,34 @@ public class Mesh {
 				    {position.x, position.y+Voxel.SIZE, position.z} },
 
 	                // Back Face - {Bottom Right}, {Top Right}, {Top Left}, {Bottom Left}
-				  { {position.x, position.y, position.z-Voxel.SIZE},
-				    {position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE},
-				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE},
-				    {position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE} },
+				  { {position.x, position.y, position.z - Voxel.HALF},
+				    {position.x, position.y+Voxel.SIZE, position.z - Voxel.HALF},
+				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z - Voxel.HALF},
+				    {position.x+Voxel.SIZE, position.y, position.z - Voxel.HALF} },
 
 				    // Top Face - {Top Left}, {Bottom Left}, {Bottom Right}, {Top Right}
-				  { {position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE},
+				  { {position.x, position.y+Voxel.SIZE, position.z - Voxel.HALF},
 				    {position.x, position.y+Voxel.SIZE, position.z},
 				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z},
-				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE} },
+				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z - Voxel.HALF} },
 
 				    // Bottom Face - {Top Right}, {Top Left}, {Bottom Left}, {Bottom Right}
-				  { {position.x, position.y, position.z-Voxel.SIZE},
-				    {position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE},
+				  { {position.x, position.y, position.z - Voxel.HALF},
+				    {position.x+Voxel.SIZE, position.y, position.z - Voxel.HALF},
 				    {position.x+Voxel.SIZE, position.y, position.z},
 				    {position.x, position.y+Voxel.SIZE, position.z} },
 
 				    // Right face - {Bottom Right}, {Top Right}, {Top Left}, {Bototm Left}
-				  { {position.x+Voxel.SIZE, position.y, position.z-Voxel.SIZE},
-				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z-Voxel.SIZE},
+				  { {position.x+Voxel.SIZE, position.y, position.z - Voxel.HALF},
+				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z - Voxel.HALF},
 				    {position.x+Voxel.SIZE, position.y+Voxel.SIZE, position.z},
 				    {position.x+Voxel.SIZE, position.y, position.z} },
 
 				    // Left Face - {Bottom Left}, {Bottom Right}, {Top Right}, {Top Left}
-				  { {position.x, position.y, position.z-Voxel.SIZE},
+				  { {position.x, position.y, position.z - Voxel.HALF},
 				    {position.x, position.y, position.z},
 				    {position.x, position.y+Voxel.SIZE, position.z},
-				    {position.x, position.y+Voxel.SIZE, position.z-Voxel.SIZE} }
+				    {position.x, position.y+Voxel.SIZE, position.z - Voxel.HALF} }
                 };
 		
 		return new ArrayList(Arrays.asList(v2));

@@ -14,6 +14,8 @@ public class Voxel implements Serializable {
 
 	private static final long serialVersionUID = 2L;
 	public final transient static float SIZE = 0.5f;
+	public final transient static float HALF = 0.5f/2f;
+	public final transient static float RAIDUS = (float)( Math.sqrt(2.0) * SIZE );
 	public transient static Texture image;
 	
 	public int[] position;

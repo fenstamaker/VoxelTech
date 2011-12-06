@@ -116,7 +116,7 @@ public class Game extends AbstractGame {
 				ThreadHandler.setFlag(turn, false);
 				ThreadHandler.setTurn(opTurn);
 
-				//System.out.println("World: FINISHED");
+				System.out.println("World: FINISHED");
 			}
 			
 		}
