@@ -24,6 +24,9 @@ public enum Frustum {
 	public static float fov = 65.0f;
 	
 	protected static float mouseSensitivity = 0.04f;
+	public static Vector3f xAxis = new Vector3f(1.0f, 0, 0);
+	public static Vector3f yAxis = new Vector3f(0, 1.0f, 0);
+	public static Vector3f zAxis = new Vector3f(0, 0, 1.0f);
 	
 	public float horizontalAngle = 0.0f;
 	public float verticalAngle = 0.0f;
@@ -85,79 +88,22 @@ public enum Frustum {
 
 		Y = Vector3f.cross(Z, X, null);
 
-		nearCenter = new Vector3f(direction);
-		nearCenter.scale(nearDistance);
-		nearCenter = Vector3f.add(nearCenter, position, null);
-
-		farCenter = new Vector3f(direction);
-		farCenter.scale(farDistance);
-		farCenter = Vector3f.add(farCenter, position, null);
-
-		planes[NEAR] = new Plane( (Vector3f)Z.negate(), nearCenter);
-		planes[FAR] = new Plane(Z, farCenter);
-
-		// Creating the top plane
-		planeNormal = new Vector3f(Y);
-		planeNormal.scale(nearHeight);
-		planeNormal = Vector3f.add(nearCenter, planeNormal, null);
-		planeNormal = Vector3f.sub(planeNormal, position, null);
-		planeNormal.normalise();
-		planeNormal = Vector3f.cross(planeNormal, X, null);
-
-		planePoint = new Vector3f(Y);
-		planePoint.scale(nearHeight);
-		planePoint = Vector3f.add(nearCenter, planePoint, null);
-		planes[TOP] = new Plane(planeNormal, planePoint);
-
-		// Creating the bottom plane
-		planeNormal = new Vector3f(Y);
-		planeNormal.scale(nearHeight);
-		planeNormal = Vector3f.sub(nearCenter, planeNormal, null);
-		planeNormal = Vector3f.sub(planeNormal, position, null);
-		planeNormal.normalise();
-		planeNormal = Vector3f.cross(X, planeNormal, null);
-
-		planePoint = new Vector3f(Y);
-		planePoint.scale(nearHeight);
-		planePoint = Vector3f.sub(nearCenter, planePoint, null);
-		planes[BOTTOM] = new Plane(planeNormal, planePoint);
-
-		// Creating the left plane
-		planeNormal = new Vector3f(X);
-		planeNormal.scale(nearWidth);
-		planeNormal = Vector3f.sub(nearCenter, planeNormal, null);
-		planeNormal = Vector3f.sub(planeNormal, position, null);
-		planeNormal.normalise();
-		planeNormal = Vector3f.cross(planeNormal, Y, null);
-
-		planePoint = new Vector3f(X);
-		planePoint.scale(nearWidth);
-		planePoint = Vector3f.sub(nearCenter, planePoint, null);
-		planes[LEFT] = new Plane(planeNormal, planePoint);
-
-		// Creating the right plane
-		planeNormal = new Vector3f(X);
-		planeNormal.scale(nearWidth);
-		planeNormal = Vector3f.add(nearCenter, planeNormal, null);
-		planeNormal = Vector3f.sub(planeNormal, position, null);
-		planeNormal.normalise();
-		planeNormal = Vector3f.cross(Y, planeNormal, null);
-
-		planePoint = new Vector3f(X);
-		planePoint.scale(nearWidth);
-		planePoint = Vector3f.add(nearCenter, planePoint, null);
-		planes[RIGHT] = new Plane(planeNormal, planePoint);
-		
-		/*
 		buffer.rewind();
 		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, buffer);
 		projection.load(buffer);
+		//projection.rotate(horizontalAngle, new Vector3f(0, 1.0f, 0) );
+		//projection.rotate(verticalAngle, new Vector3f(1.0f, 0, 0) );
+		//projection.translate(position.negate(null));
 		
 		buffer.clear();
 		
 		buffer.rewind();
 		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, buffer);
 		modelview.load(buffer);
+		//modelview.rotate(horizontalAngle, new Vector3f(0, 1.0f, 0) );
+		//modelview.rotate(verticalAngle, new Vector3f(1.0f, 0, 0) );
+		//modelview.translate(position.negate(null));
+		
 		
 		Matrix4f clip = new Matrix4f();
 		Matrix4f.mul(modelview, projection, clip);
@@ -172,7 +118,6 @@ public enum Frustum {
 		for(Plane plane : planes) {
 			plane.normalize();
 		}
-		*/
 	}
 	
 	public boolean isInFrustum(Voxel voxel) {
@@ -180,7 +125,7 @@ public enum Frustum {
 		
 		float distance;
 		for(int i = 0; i < 6; i++) {
-			distance = planes[i].getDistance(center);
+			distance = planes[i].getDistance1(center);
 			if( distance <= -Voxel.RAIDUS ) {
 				return false;
 			}
@@ -195,13 +140,13 @@ public enum Frustum {
 	}
 	
 	public void rotateHorizontal(float dx) {
-		horizontalAngle += dx * mouseSensitivity;
+		modelview.rotate(dx * mouseSensitivity, yAxis);
 		direction.x = -1 * (float)Math.sin( Math.toRadians(horizontalAngle) );
 		direction.z = (float)Math.cos( Math.toRadians(horizontalAngle) );
 	}
 	
 	public void rotateVertical(float dy) {
-		verticalAngle -= dy * mouseSensitivity;
+		modelview.rotate(dy * mouseSensitivity, xAxis);
 		direction.y = (float)Math.sin( Math.toRadians(verticalAngle) );
 	}
 	
@@ -209,8 +154,8 @@ public enum Frustum {
 		calculateRight();
 		Vector3f movement = new Vector3f(direction);
 		movement.scale(distance);
-		
-		position = Vector3f.add(position, movement, null);
+
+		modelview.translate(movement);
     }
 
     public void backwards(float distance) {
@@ -219,7 +164,7 @@ public enum Frustum {
 		movement.scale(distance);
 		movement.negate();
 
-		position = Vector3f.add(position, movement, null);
+		modelview.translate(movement);
     }
 
     public void left(float distance) {
@@ -228,7 +173,7 @@ public enum Frustum {
 		movement.scale(distance);
 		movement.negate();
 
-		position = Vector3f.add(position, movement, null);
+		modelview.translate(movement);
     }
 
     public void right(float distance) {
@@ -236,25 +181,42 @@ public enum Frustum {
 		Vector3f movement = new Vector3f(right);
 		movement.scale(distance);
 
-		position = Vector3f.add(position, movement, null);
+		modelview.translate(movement);
     }
     
     public void up(float distance) {
-    	position.y -= distance;
+		Vector3f movement = new Vector3f(up);
+		movement.scale(distance);
+
+		modelview.translate(movement);
     }
 
     public void down(float distance) {
-    	position.y += distance;
+		Vector3f movement = new Vector3f(up);
+		movement.scale(distance);
+		movement.negate();
+
+		modelview.translate(movement);
     }
     
     public void reset() {
     	horizontalAngle = 0;
     	verticalAngle = 0;
-    	position = new Vector3f(0,0,0);
+		buffer.clear();
+			
+		buffer.rewind();
+		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, buffer);
+		modelview.load(buffer);
     }
 	
 	public void update() {
 		
+		buffer.clear();
+		modelview.store(buffer);
+		buffer.rewind();
+		GL11.glLoadMatrix(buffer);
+		
+		/*
 		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		GL11.glLoadIdentity();
@@ -266,9 +228,9 @@ public enum Frustum {
         //Translate to the position vector's location
         GL11.glTranslatef(position.x, position.y, position.z);
         
-        calculateFrustum();
+        //calculateFrustum();
         
-        //
+        */
 		
 	}
 
