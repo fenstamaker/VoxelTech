@@ -35,6 +35,7 @@ public class Game extends AbstractGame {
     public void loop() {
 	
 	    clock.tick();
+	    //camera.reset();
 	    dx = Mouse.getDX();
 	    dy = Mouse.getDY();
 	
@@ -43,6 +44,7 @@ public class Game extends AbstractGame {
 	
 	    float dt = clock.getDt();
 	
+	    
 	    if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 	    	camera.forward(movementSpeed * dt);
 	    }
