@@ -23,7 +23,7 @@ public enum Frustum {
 	public static float farDistance = 200.0f;
 	public static float fov = 65.0f;
 	
-	protected static float mouseSensitivity = 0.04f;
+	protected static float mouseSensitivity = 0.004f;
 	public static Vector3f xAxis = new Vector3f(1.0f, 0, 0);
 	public static Vector3f yAxis = new Vector3f(0, 1.0f, 0);
 	public static Vector3f zAxis = new Vector3f(0, 0, 1.0f);
@@ -43,6 +43,8 @@ public enum Frustum {
 	
 	private Matrix4f projection;
 	private Matrix4f modelview;
+	
+	private Quaternion rotation;
 	
 	private FloatBuffer buffer;
 	
@@ -161,23 +163,13 @@ public enum Frustum {
 		direction.y = (float)Math.sin( Math.toRadians(verticalAngle) );
 		calculateRight();
 		
-		Matrix4f identity0 = new Matrix4f();
-		identity0.setIdentity();
-		Matrix4f identity1 = new Matrix4f(identity0);
+		Quaternion horizontalRotation, verticalRotation;
 		
-		identity0.rotate( (float)Math.toRadians( horizontalAngle ), yAxis );
-		identity1.rotate( (float)Math.toRadians( verticalAngle ), xAxis );
+		horizontalRotation = new Quaternion(yAxis.x, yAxis.y, yAxis.z, horizontalAngle);
+		verticalRotation = new Quaternion(xAxis.x, xAxis.y, xAxis.z, verticalAngle);
 		
-		identity0 = Matrix4f.mul(identity0, identity1, null);
-		modelview.translate(position.negate(null));
-		modelview = Matrix4f.mul(modelview, identity0, null);
-		
-		Vector3f frustumUp = Vector3f.cross(direction, right, null);
-		float fixAngle = Vector3f.angle(up, frustumUp);
-		//modelview.rotate(fixAngle, direction);
-		
-		modelview.translate(position);
-		
+		rotation = Quaternion.mul(rotation, horizontalRotation, null);
+		rotation = Quaternion.mul(rotation, verticalRotation, null);
 	}
 	
 	public void rotateHorizontal(float dx) {
@@ -200,7 +192,7 @@ public enum Frustum {
 		movement.scale(distance);
 
 		position = Vector3f.add(position, movement, null);
-		modelview.translate(movement);
+		//modelview.translate(movement);
     }
 
     public void backwards(float distance) {
@@ -209,7 +201,7 @@ public enum Frustum {
 		movement.negate();
 
 		position = Vector3f.add(position, movement, null);
-		modelview.translate(movement);
+		//modelview.translate(movement);
     }
 
     public void left(float distance) {
@@ -219,7 +211,7 @@ public enum Frustum {
 		movement.negate();
 
 		position = Vector3f.add(position, movement, null);
-		modelview.translate(movement);
+		//modelview.translate(movement);
     }
 
     public void right(float distance) {
@@ -228,7 +220,7 @@ public enum Frustum {
 		movement.scale(distance);
 
 		position = Vector3f.add(position, movement, null);
-		modelview.translate(movement);
+		//modelview.translate(movement);
     }
     
     public void up(float distance) {
@@ -236,7 +228,7 @@ public enum Frustum {
 		movement.scale(distance);
 
 		position = Vector3f.add(position, movement, null);
-		modelview.translate(movement);
+		//modelview.translate(movement);
     }
 
     public void down(float distance) {
@@ -245,20 +237,58 @@ public enum Frustum {
 		movement.negate();
 
 		position = Vector3f.add(position, movement, null);
-		modelview.translate(movement);
+		//modelview.translate(movement);
     }
     
     public void reset() {
-    	horizontalAngle = 0;
-    	verticalAngle = 0;
-		buffer.clear();
-			
+    	rotation = new Quaternion(1, 0, 0, 0);
+    	modelview.setIdentity();
+    	/*
+    	buffer.clear();
 		buffer.rewind();
 		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, buffer);
 		modelview.load(buffer);
+		*/
+    }
+    
+    public static Matrix4f multiplyMatrixQuaternion(Matrix4f m, Quaternion q) {
+    	
+    	q.normalise();
+
+    	float x2 = 2.0f * q.x * q.x;
+    	float y2 = 2.0f * q.y * q.y;
+    	float z2 = 2.0f * q.z * q.z;
+    	float xy = 2.0f * q.x * q.y;
+    	float xz = 2.0f * q.x * q.z;
+    	float yz = 2.0f * q.y * q.z;
+    	float wx = 2.0f * q.w * q.x;
+    	float wy = 2.0f * q.w * q.y;
+    	float wz = 2.0f * q.w * q.z;
+    	
+    	m.m00 = 1-y2-z2;
+    	m.m01 = xy-wz;
+    	m.m02 = xz+wy;
+    	m.m03 = 0;
+    	m.m10 = xy+wz;
+    	m.m11 = 1-x2-z2;
+    	m.m12 = yz-wx;
+    	m.m13 = 0;
+    	m.m20 = xz-wy;
+    	m.m21 = yz-wx;
+    	m.m22 = 1-x2-y2;
+    	m.m23 = 0;
+    	m.m30 = 0;
+    	m.m31 = 0;
+    	m.m32 = 0;
+    	m.m33 = 1;
+    	
+    	return m;
     }
 	
 	public void update() {
+		
+		modelview = multiplyMatrixQuaternion(modelview, rotation);
+		modelview.translate(position);
 		
 		buffer.clear();
 		modelview.store(buffer);
