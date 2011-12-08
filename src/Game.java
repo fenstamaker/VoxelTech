@@ -39,8 +39,10 @@ public class Game extends AbstractGame {
 	    dx = Mouse.getDX();
 	    dy = Mouse.getDY();
 	
-	    camera.rotateHorizontal(dx);
-	    camera.rotateVertical(dy);
+	    camera.rotate(dx, dy);
+	    
+	    //camera.rotateHorizontal(dx);
+	    //camera.rotateVertical(dy);
 	
 	    float dt = clock.getDt();
 	

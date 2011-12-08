@@ -135,35 +135,80 @@ public enum Frustum {
 	}
 	
 	private void calculateRight() {
-		direction.normalise();
-		right = Vector3f.cross(direction, up, null);
+		right = Vector3f.cross(direction, yAxis, null);
+	}
+	
+	private Vector3f getVerticalAxis() {
+		Vector3f temp = new Vector3f(position.x, 1.0f, position.z);
+		temp.normalise();
+		return temp;
+	}
+	
+	private Vector3f getHorizontalAxis() {
+		Vector3f temp = new Vector3f(1.0f, position.y, position.z);
+		temp.normalise();
+		return temp;
+	}
+	
+	public void rotate(float dx, float dy) {
+		reset();
+		
+		horizontalAngle += dx * mouseSensitivity;
+		verticalAngle -= dy * mouseSensitivity;
+		
+		direction.x = -1 * (float)Math.sin( Math.toRadians(horizontalAngle) );
+		direction.z = (float)Math.cos( Math.toRadians(horizontalAngle) );
+		direction.y = (float)Math.sin( Math.toRadians(verticalAngle) );
+		calculateRight();
+		
+		Matrix4f identity0 = new Matrix4f();
+		identity0.setIdentity();
+		Matrix4f identity1 = new Matrix4f(identity0);
+		
+		identity0.rotate( (float)Math.toRadians( horizontalAngle ), yAxis );
+		identity1.rotate( (float)Math.toRadians( verticalAngle ), xAxis );
+		
+		identity0 = Matrix4f.mul(identity0, identity1, null);
+		modelview.translate(position.negate(null));
+		modelview = Matrix4f.mul(modelview, identity0, null);
+		
+		Vector3f frustumUp = Vector3f.cross(direction, right, null);
+		float fixAngle = Vector3f.angle(up, frustumUp);
+		//modelview.rotate(fixAngle, direction);
+		
+		modelview.translate(position);
+		
 	}
 	
 	public void rotateHorizontal(float dx) {
-		modelview.rotate(dx * mouseSensitivity, yAxis);
+		modelview.translate(position.negate(null));
+		modelview.rotate( (float)Math.toRadians( dx * mouseSensitivity ), yAxis );
+		modelview.translate(position);
 		direction.x = -1 * (float)Math.sin( Math.toRadians(horizontalAngle) );
 		direction.z = (float)Math.cos( Math.toRadians(horizontalAngle) );
 	}
 	
 	public void rotateVertical(float dy) {
-		modelview.rotate(dy * mouseSensitivity, xAxis);
+		modelview.translate(position.negate(null));
+		modelview.rotate( (float)Math.toRadians( -dy * mouseSensitivity ), xAxis );
+		modelview.translate(position);
 		direction.y = (float)Math.sin( Math.toRadians(verticalAngle) );
 	}
 	
 	public void forward(float distance) {
-		calculateRight();
 		Vector3f movement = new Vector3f(direction);
 		movement.scale(distance);
 
+		position = Vector3f.add(position, movement, null);
 		modelview.translate(movement);
     }
 
     public void backwards(float distance) {
-		calculateRight();
 		Vector3f movement = new Vector3f(direction);
 		movement.scale(distance);
 		movement.negate();
 
+		position = Vector3f.add(position, movement, null);
 		modelview.translate(movement);
     }
 
@@ -173,6 +218,7 @@ public enum Frustum {
 		movement.scale(distance);
 		movement.negate();
 
+		position = Vector3f.add(position, movement, null);
 		modelview.translate(movement);
     }
 
@@ -181,6 +227,7 @@ public enum Frustum {
 		Vector3f movement = new Vector3f(right);
 		movement.scale(distance);
 
+		position = Vector3f.add(position, movement, null);
 		modelview.translate(movement);
     }
     
@@ -188,6 +235,7 @@ public enum Frustum {
 		Vector3f movement = new Vector3f(up);
 		movement.scale(distance);
 
+		position = Vector3f.add(position, movement, null);
 		modelview.translate(movement);
     }
 
@@ -196,6 +244,7 @@ public enum Frustum {
 		movement.scale(distance);
 		movement.negate();
 
+		position = Vector3f.add(position, movement, null);
 		modelview.translate(movement);
     }
     
