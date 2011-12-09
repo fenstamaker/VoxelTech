@@ -9,6 +9,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.*;
 
+import org.voxeltech.game.*;
+
 public enum Frustum {
 	INSTANCE;
 	
@@ -18,6 +20,7 @@ public enum Frustum {
 	public static final int LEFT = 2;
 	public static final int TOP = 1;
 	public static final int BOTTOM = 0;
+	public static final int height = 1;
 	
 	public static float nearDistance = 0.1f;
 	public static float farDistance = 200.0f;
@@ -32,12 +35,14 @@ public enum Frustum {
 	public float verticalAngle = 0.0f;
 	public Vector3f up = new Vector3f(0, 1, 0);
 	public Vector3f direction = new Vector3f(0, 0, -1);
-	public Vector3f position = new Vector3f(8, -6, 1);
+	public Vector3f position = new Vector3f(8, -7, 0);
 	public Vector3f right;
 	
 	private Matrix4f projection;
 	private Matrix4f modelview;
 	private Matrix4f identity;
+	
+	private World world = World.INSTANCE;
 	
 	private FloatBuffer buffer;
 	
@@ -61,8 +66,6 @@ public enum Frustum {
 	 */
 	public void calculateFrustum() {
 		buffer.clear();
-		
-		displayRatio = (float)( Display.getWidth() / Display.getHeight() );
 		
 		calculateRight();
 
@@ -98,7 +101,7 @@ public enum Frustum {
 		float distance;
 		for(int i = 0; i < 6; i++) {
 			distance = planes[i].getDistance1(center);
-			if( distance <= -Voxel.RAIDUS ) {
+			if( distance <= -Voxel.RADIUS ) {
 				return false;
 			}
 		}
@@ -139,11 +142,18 @@ public enum Frustum {
 		*/
 	}
 	
+	private void updatePosition(Vector3f movement) {
+		Vector3f temp = Vector3f.add(position, movement, null);
+		if( true || !world.checkPlayerCollision(temp) ) {
+			position = temp;
+		}
+	}
+	
 	public void forward(float distance) {
 		Vector3f movement = new Vector3f(direction);
 		movement.scale(distance);
-
-		position = Vector3f.add(position, movement, null);
+		
+		updatePosition(movement);
     }
 
     public void backwards(float distance) {
@@ -151,7 +161,7 @@ public enum Frustum {
 		movement.scale(distance);
 		movement.negate();
 
-		position = Vector3f.add(position, movement, null);
+		updatePosition(movement);
     }
 
     public void left(float distance) {
@@ -160,7 +170,7 @@ public enum Frustum {
 		movement.scale(distance);
 		movement.negate();
 
-		position = Vector3f.add(position, movement, null);
+		updatePosition(movement);
     }
 
     public void right(float distance) {
@@ -168,14 +178,14 @@ public enum Frustum {
 		Vector3f movement = new Vector3f(right);
 		movement.scale(distance);
 
-		position = Vector3f.add(position, movement, null);
+		updatePosition(movement);
     }
     
     public void up(float distance) {
 		Vector3f movement = new Vector3f(up);
 		movement.scale(distance);
 
-		position = Vector3f.add(position, movement, null);
+		updatePosition(movement);
     }
 
     public void down(float distance) {
@@ -183,7 +193,7 @@ public enum Frustum {
 		movement.scale(distance);
 		movement.negate();
 
-		position = Vector3f.add(position, movement, null);
+		updatePosition(movement);
     }
     
     public void reset() {

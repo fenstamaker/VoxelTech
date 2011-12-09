@@ -12,6 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import org.voxeltech.audio.AudioController;
 import org.voxeltech.graphics.*;
 import org.voxeltech.utils.*;
 import org.voxeltech.noise.*;
@@ -22,7 +23,7 @@ public class WorldChunk implements Externalizable{
 
 	private ProgramClock clock = ProgramClock.getInstance();	
     private Frustum frustum = Frustum.INSTANCE;
-	private TerrianList<Voxel> terrian;
+	public TerrianList<Voxel> terrian;
 	
 	/**
 	 * <em>coordinates</em> refer to the chunk coordinates. (does not correspond
@@ -119,7 +120,13 @@ public class WorldChunk implements Externalizable{
 					vox.turnOn();
 				}
 			}
-	        vox.setColor((float)Math.abs(noise3d)*.8f, (float)Math.abs(noise3d)*.2f, (float)Math.abs(noise3d)*.3f);
+			
+			if( vox.actualPosition[1] > seaLevel - 5.0f ) {
+				float colorMultiplier = ( (float)Math.abs(noise3d) + .3f);
+		        vox.setColor( colorMultiplier*.2f, colorMultiplier*.5f, 0f);
+			}
+			
+	        
 		}
 	}
 	

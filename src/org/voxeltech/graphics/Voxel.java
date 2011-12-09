@@ -15,7 +15,7 @@ public class Voxel implements Serializable {
 	private static final long serialVersionUID = 2L;
 	public final transient static float SIZE = 0.5f;
 	public final transient static float HALF = 0.5f/2f;
-	public final transient static float RAIDUS = (float)( Math.sqrt(2.0) * SIZE );
+	public final transient static float RADIUS = (float)( Math.sqrt(2.0) * SIZE );
 	public transient static Texture image;
 	
 	public int[] position;
@@ -26,7 +26,7 @@ public class Voxel implements Serializable {
     public Voxel(int x, int y, int z) {
 		position = new int[] {x, y, z};
 	
-		color = new float[] {0f, .8f, .1f};
+		color = new float[] {.2f, .2f, .2f};
     }
     
     public void setActualPosition(float x, float y, float z) {
@@ -59,6 +59,27 @@ public class Voxel implements Serializable {
     	} catch(IOException e) {
     	    e.printStackTrace();
     	}
+    }
+    
+    public boolean hasCollidedWith(Voxel voxel) {
+    	
+    	float distance = getDistance(voxel);
+    	
+    	if( distance <= Voxel.RADIUS && distance >= -Voxel.RADIUS ) {
+    		return true;
+    	}
+    	
+    	return false;
+    	
+    }
+    
+    public float getDistance(Voxel voxel) {
+    	
+    	float[] point0 = this.actualPosition;
+    	float[] point1 = voxel.actualPosition;
+    	
+    	return (float)Math.sqrt( (point1[0] - point0[0])*(point1[0] - point0[0]) + (point1[1] - point0[1])*(point1[1] - point0[1]) + (point1[2] - point0[2])*(point1[2] - point0[2]) );
+    	
     }
 
 }

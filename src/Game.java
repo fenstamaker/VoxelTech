@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -14,7 +15,7 @@ public class Game extends AbstractGame {
 	public final static int turn = 1;
 	public final static int opTurn = 0;
 	
-	public World world = new World();
+	public World world = World.INSTANCE;
 	private Thread thread;
 
 	private Vector3f playerLocation;
@@ -82,7 +83,7 @@ public class Game extends AbstractGame {
 		playerLocation = new Vector3f(x, y, z);
     	//System.out.println(playerLocation.toString());
 		int[] newChunkLocation = new int[] { ((int)(x / (WorldChunk.SIZE*Voxel.SIZE))), 
-									   ((int)(y / (WorldChunk.SIZE*Voxel.SIZE))), 
+									   0, 
 									   ((int)(z / (WorldChunk.SIZE*Voxel.SIZE))) };
 		
 		if(!Arrays.equals(chunkPlayerIsIn, newChunkLocation)) {
@@ -103,8 +104,11 @@ public class Game extends AbstractGame {
 			if( !ThreadHandler.flag[opTurn] || ThreadHandler.turn != opTurn ) {
 				//System.out.println("World: PROCEED");
 				Renderer.clearChunks(); 
+				world.clearChunks();
 				
-				Renderer.addChunks( ThreadHandler.getChunks() );
+				ArrayList<WorldChunk> chunks = ThreadHandler.getChunks();
+				Renderer.addChunks( chunks );
+				world.addChunks( chunks );
 				
 				ThreadHandler.setUpdate(false);
 				ThreadHandler.setFlag(turn, false);
