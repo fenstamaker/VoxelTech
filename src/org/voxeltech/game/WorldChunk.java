@@ -90,6 +90,8 @@ public class WorldChunk implements Externalizable{
 				}
 			}
 		}
+		
+		applyAnimation();
 	}
 	
 	public void applyAnimation() {
@@ -97,7 +99,7 @@ public class WorldChunk implements Externalizable{
 			double noise2d = SimplexNoise.noise( vox.actualPosition[0]/10.0, vox.actualPosition[2]/10.0 );
 			double noise3d = SimplexNoise.noise( vox.actualPosition[0]/15.0, vox.actualPosition[1]/15.0, vox.actualPosition[2]/15.0);//, clock.getTime());
 	        
-			float seaLevel = 5.0f;
+			float seaLevel = 3.0f;
 			
 			if(noise3d >= 0.3) {
 				vox.turnOn();
@@ -113,7 +115,7 @@ public class WorldChunk implements Externalizable{
 			
 			if( vox.actualPosition[1] > seaLevel ) {
 				vox.turnOff();
-				if( noise2d*WorldChunk.SIZE > seaLevel ) {
+				if( vox.actualPosition[1] < noise2d*WorldChunk.SIZE ) {
 					vox.turnOn();
 				}
 			}

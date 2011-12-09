@@ -23,7 +23,7 @@ public enum Frustum {
 	public static float farDistance = 200.0f;
 	public static float fov = 65.0f;
 	
-	protected static float mouseSensitivity = 0.004f;
+	protected static float mouseSensitivity = 0.04f;
 	public static Vector3f xAxis = new Vector3f(1.0f, 0, 0);
 	public static Vector3f yAxis = new Vector3f(0, 1.0f, 0);
 	public static Vector3f zAxis = new Vector3f(0, 0, 1.0f);
@@ -32,19 +32,12 @@ public enum Frustum {
 	public float verticalAngle = 0.0f;
 	public Vector3f up = new Vector3f(0, 1, 0);
 	public Vector3f direction = new Vector3f(0, 0, -1);
-	public Vector3f position = new Vector3f(0, 0, 0);
+	public Vector3f position = new Vector3f(8, -6, 1);
 	public Vector3f right;
-	
-	private float displayRatio;
-	private float nearHeight;
-	private float nearWidth;
-	private float farHeight;
-	private float farWidth;
 	
 	private Matrix4f projection;
 	private Matrix4f modelview;
-	
-	private Quaternion rotation;
+	private Matrix4f identity;
 	
 	private FloatBuffer buffer;
 	
@@ -57,6 +50,8 @@ public enum Frustum {
 		buffer = BufferUtils.createFloatBuffer(16);
 		projection = new Matrix4f();
 		modelview = new Matrix4f();
+		identity = new Matrix4f();
+		identity.setIdentity();
 	}
 	
 	/*
@@ -69,46 +64,21 @@ public enum Frustum {
 		
 		displayRatio = (float)( Display.getWidth() / Display.getHeight() );
 		
-		nearHeight = (float)(2.0 * Math.tan( Math.toRadians(fov/2.0) ) * nearDistance);
-		nearWidth = nearHeight * displayRatio;
-		
-		farHeight = (float)(2.0 * Math.tan( Math.toRadians(fov/2.0) ) * farDistance);
-		farWidth = farHeight * displayRatio;
-		
 		calculateRight();
-		
-		Vector3f planeNormal;
-		Vector3f planePoint;
-
-		Vector3f farCenter, nearCenter, X, Y, Z;
-
-		Z = Vector3f.sub(position, direction, null);
-		Z.normalise();
-
-		X = Vector3f.cross(up, Z, null);
-		X.normalise();
-
-		Y = Vector3f.cross(Z, X, null);
 
 		buffer.rewind();
 		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, buffer);
 		projection.load(buffer);
-		//projection.rotate(horizontalAngle, new Vector3f(0, 1.0f, 0) );
-		//projection.rotate(verticalAngle, new Vector3f(1.0f, 0, 0) );
-		//projection.translate(position.negate(null));
 		
 		buffer.clear();
 		
 		buffer.rewind();
 		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, buffer);
 		modelview.load(buffer);
-		//modelview.rotate(horizontalAngle, new Vector3f(0, 1.0f, 0) );
-		//modelview.rotate(verticalAngle, new Vector3f(1.0f, 0, 0) );
-		//modelview.translate(position.negate(null));
 		
 		
 		Matrix4f clip = new Matrix4f();
-		Matrix4f.mul(modelview, projection, clip);
+		Matrix4f.mul( projection, modelview,clip);
 		
 		planes[RIGHT] = new Plane(  clip.m03-clip.m00, clip.m13-clip.m10, clip.m23-clip.m20, clip.m33-clip.m30 );
 		planes[LEFT] = new Plane(   clip.m03+clip.m00, clip.m13+clip.m10, clip.m23+clip.m20, clip.m33+clip.m30 );
@@ -137,19 +107,7 @@ public enum Frustum {
 	}
 	
 	private void calculateRight() {
-		right = Vector3f.cross(direction, yAxis, null);
-	}
-	
-	private Vector3f getVerticalAxis() {
-		Vector3f temp = new Vector3f(position.x, 1.0f, position.z);
-		temp.normalise();
-		return temp;
-	}
-	
-	private Vector3f getHorizontalAxis() {
-		Vector3f temp = new Vector3f(1.0f, position.y, position.z);
-		temp.normalise();
-		return temp;
+		right = Vector3f.cross(direction, up, null);
 	}
 	
 	public void rotate(float dx, float dy) {
@@ -161,30 +119,24 @@ public enum Frustum {
 		direction.x = -1 * (float)Math.sin( Math.toRadians(horizontalAngle) );
 		direction.z = (float)Math.cos( Math.toRadians(horizontalAngle) );
 		direction.y = (float)Math.sin( Math.toRadians(verticalAngle) );
-		calculateRight();
-		
+		/*
 		Quaternion horizontalRotation, verticalRotation;
 		
-		horizontalRotation = new Quaternion(yAxis.x, yAxis.y, yAxis.z, horizontalAngle);
-		verticalRotation = new Quaternion(xAxis.x, xAxis.y, xAxis.z, verticalAngle);
+		horizontalRotation = new Quaternion();
+		horizontalRotation.setFromAxisAngle( new Vector4f(0f, 1f, 0f, (float)Math.toRadians(-horizontalAngle) ) );
+		horizontalRotation.normalise();
+		verticalRotation = new Quaternion();
+		verticalRotation.setFromAxisAngle( new Vector4f(1f, 0f, 0f, (float)Math.toRadians(verticalAngle) ) );
+		verticalRotation.normalise();
 		
-		rotation = Quaternion.mul(rotation, horizontalRotation, null);
-		rotation = Quaternion.mul(rotation, verticalRotation, null);
-	}
-	
-	public void rotateHorizontal(float dx) {
-		modelview.translate(position.negate(null));
-		modelview.rotate( (float)Math.toRadians( dx * mouseSensitivity ), yAxis );
-		modelview.translate(position);
-		direction.x = -1 * (float)Math.sin( Math.toRadians(horizontalAngle) );
-		direction.z = (float)Math.cos( Math.toRadians(horizontalAngle) );
-	}
-	
-	public void rotateVertical(float dy) {
-		modelview.translate(position.negate(null));
-		modelview.rotate( (float)Math.toRadians( -dy * mouseSensitivity ), xAxis );
-		modelview.translate(position);
-		direction.y = (float)Math.sin( Math.toRadians(verticalAngle) );
+		rotation = Quaternion.mul( horizontalRotation, verticalRotation, null);
+		
+		Matrix4f matrix = multiplyMatrixQuaternion(identity, verticalRotation);
+		Matrix4f temp = multiplyMatrixQuaternion(identity, rotation);
+		direction.x = -temp.m20;
+		direction.y = -matrix.m21;
+		direction.z = temp.m22;
+		*/
 	}
 	
 	public void forward(float distance) {
@@ -192,7 +144,6 @@ public enum Frustum {
 		movement.scale(distance);
 
 		position = Vector3f.add(position, movement, null);
-		//modelview.translate(movement);
     }
 
     public void backwards(float distance) {
@@ -201,7 +152,6 @@ public enum Frustum {
 		movement.negate();
 
 		position = Vector3f.add(position, movement, null);
-		//modelview.translate(movement);
     }
 
     public void left(float distance) {
@@ -211,7 +161,6 @@ public enum Frustum {
 		movement.negate();
 
 		position = Vector3f.add(position, movement, null);
-		//modelview.translate(movement);
     }
 
     public void right(float distance) {
@@ -220,7 +169,6 @@ public enum Frustum {
 		movement.scale(distance);
 
 		position = Vector3f.add(position, movement, null);
-		//modelview.translate(movement);
     }
     
     public void up(float distance) {
@@ -228,7 +176,6 @@ public enum Frustum {
 		movement.scale(distance);
 
 		position = Vector3f.add(position, movement, null);
-		//modelview.translate(movement);
     }
 
     public void down(float distance) {
@@ -237,19 +184,26 @@ public enum Frustum {
 		movement.negate();
 
 		position = Vector3f.add(position, movement, null);
-		//modelview.translate(movement);
     }
     
     public void reset() {
-    	rotation = new Quaternion(1, 0, 0, 0);
-    	modelview.setIdentity();
-    	/*
-    	buffer.clear();
-		buffer.rewind();
-		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, buffer);
-		modelview.load(buffer);
-		*/
+    	//rotation = new Quaternion(1, 0, 0, 0);
     }
+    
+	public void update() {
+		GL11.glLoadIdentity();
+
+		//modelview = multiplyMatrixQuaternion(identity, rotation);
+		//modelview.translate(position);
+		
+		//buffer.clear();
+		//modelview.store(buffer);
+		//buffer.rewind();
+		//GL11.glLoadMatrix(buffer);
+        GL11.glRotatef(verticalAngle, 1.0f, 0.0f, 0.0f);
+        GL11.glRotatef(horizontalAngle, 0.0f, 1.0f, 0.0f);
+		GL11.glTranslatef(position.x, position.y, position.z);
+	}
     
     public static Matrix4f multiplyMatrixQuaternion(Matrix4f m, Quaternion q) {
     	
@@ -284,33 +238,5 @@ public enum Frustum {
     	
     	return m;
     }
-	
-	public void update() {
-		
-		modelview = multiplyMatrixQuaternion(modelview, rotation);
-		modelview.translate(position);
-		
-		buffer.clear();
-		modelview.store(buffer);
-		buffer.rewind();
-		GL11.glLoadMatrix(buffer);
-		
-		/*
-		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		
-		GL11.glLoadIdentity();
-		
-		//Rotate around the X axis
-        GL11.glRotatef(verticalAngle, 1.0f, 0.0f, 0.0f);
-        //Rotate around the Y axis
-        GL11.glRotatef(horizontalAngle, 0.0f, 1.0f, 0.0f);
-        //Translate to the position vector's location
-        GL11.glTranslatef(position.x, position.y, position.z);
-        
-        //calculateFrustum();
-        
-        */
-		
-	}
 
 }

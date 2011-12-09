@@ -108,7 +108,7 @@ public class WorldChunkHandler implements Runnable{
 			
 			if( !foundChunks.contains(i) ) {
 				
-				String region = generateRegionString(i.x/2, i.y/2, i.z/2);
+				String region = generateRegionString(i.x/4, i.y/4, i.z/4);
 				
 				String filename = System.getProperty("user.dir") + "/../world/VT_REGION_" + region;
 				file = new File(filename);
@@ -140,9 +140,9 @@ public class WorldChunkHandler implements Runnable{
 	public ArrayList<WorldChunk> loadChunksAroundChunk(int x, int y, int z) {
 		chunks.clear();
 		
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < 5; i++) {
 			for(int j = 0; j < 2; j++) {
-				for(int k = 0; k < 3; k++) {
+				for(int k = 0; k < 5; k++) {
 					chunks.add( new ChunkID( (x+i), (y+j), (z+k) ) );
 					chunks.add( new ChunkID( (x+i), (y+j), (z-k) ) );
 					chunks.add( new ChunkID( (x+i), (y-j), (z+k) ) );
@@ -194,6 +194,11 @@ public class WorldChunkHandler implements Runnable{
 					ThreadHandler.setFlag(turn, false);
 					
 				}
+			} else {
+				thread = Thread.currentThread();
+				try {
+					thread.sleep(200);
+				} catch(Exception e) {}
 			}
 		}
 		

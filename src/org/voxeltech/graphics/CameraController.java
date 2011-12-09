@@ -43,11 +43,11 @@ public class CameraController {
     }
 
     public void yaw(float amount) {
-    	yaw += amount;
+    	yaw += amount * Frustum.mouseSensitivity;
     }
 
     public void pitch(float amount) {
-    	pitch += amount;
+    	pitch += amount * Frustum.mouseSensitivity;
     }
 
     public void forward(float distance) {
@@ -79,10 +79,6 @@ public class CameraController {
     }
 
     public void update() {
-    	lookAtLocation = new Vector3f(  (float)Math.toDegrees(Math.asin(Math.toRadians(yaw))), 
-    									(float)Math.toDegrees(Math.asin(Math.toRadians(pitch))), 
-    									0 );
-    	lookAtLocation.normalise();
     	
         //Rotate the pitch around the X axis
         GL11.glRotatef(pitch, 1.0f, 0.0f, 0.0f);

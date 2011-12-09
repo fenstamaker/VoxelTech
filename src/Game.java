@@ -65,22 +65,11 @@ public class Game extends AbstractGame {
 	    if (Keyboard.isKeyDown(Keyboard.KEY_E) || Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 	    	camera.up(movementSpeed * dt);
 	    }
-	    if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-	    	camera.rotateVertical(-dt * movementSpeed * 2.0f);
-	    }
-	    if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-	    	camera.rotateVertical(dt * movementSpeed * 2.0f);
-	    }
-	    if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-	    	camera.rotateHorizontal(dt * movementSpeed * 2.0f);
-	    }
-	    if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-	    	camera.rotateHorizontal(-dt * movementSpeed * 2.0f);
-	    }
 	    
 	    camera.update();
+	    camera.calculateFrustum();
 	
-	    setPlayerLocation(camera.position.x, camera.position.y, camera.position.z);
+	    setPlayerLocation(-camera.position.x, -camera.position.y, -camera.position.z);
 	    loadChunksAroundPlayer();
 	    Renderer.render();
 	
@@ -91,6 +80,7 @@ public class Game extends AbstractGame {
     
     public void setPlayerLocation(float x, float y, float z) {
 		playerLocation = new Vector3f(x, y, z);
+    	//System.out.println(playerLocation.toString());
 		int[] newChunkLocation = new int[] { ((int)(x / (WorldChunk.SIZE*Voxel.SIZE))), 
 									   ((int)(y / (WorldChunk.SIZE*Voxel.SIZE))), 
 									   ((int)(z / (WorldChunk.SIZE*Voxel.SIZE))) };
