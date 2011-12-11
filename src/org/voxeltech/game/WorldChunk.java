@@ -52,9 +52,9 @@ public class WorldChunk implements Externalizable{
 	public WorldChunk(float x, float y, float z) {
 		this();
 		
-		coordinates[0] = (int)(x / (SIZE*Voxel.SIZE));
-		coordinates[1] = (int)(y / (SIZE*Voxel.SIZE));
-		coordinates[2] = (int)(z / (SIZE*Voxel.SIZE));
+		coordinates[0] = (int)(x / (SIZE));
+		coordinates[1] = (int)(y / (SIZE));
+		coordinates[2] = (int)(z / (SIZE));
 		
 		calculateChunkInfo(coordinates[0], coordinates[1], coordinates[2]);
 		

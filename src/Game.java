@@ -82,9 +82,9 @@ public class Game extends AbstractGame {
     public void setPlayerLocation(float x, float y, float z) {
 		playerLocation = new Vector3f(x, y, z);
     	//System.out.println(playerLocation.toString());
-		int[] newChunkLocation = new int[] { ((int)(x / (WorldChunk.SIZE*Voxel.SIZE))), 
+		int[] newChunkLocation = new int[] { ((int)(x / WorldChunk.SIZE)), 
 									   0, 
-									   ((int)(z / (WorldChunk.SIZE*Voxel.SIZE))) };
+									   ((int)(z / WorldChunk.SIZE)) };
 		
 		if(!Arrays.equals(chunkPlayerIsIn, newChunkLocation)) {
 			chunkPlayerIsIn = newChunkLocation;

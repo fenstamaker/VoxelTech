@@ -27,17 +27,17 @@ public enum World {
 	private ArrayList<WorldChunk> loadedChunks = new ArrayList<WorldChunk>();
 
 	public boolean checkPlayerCollision(Vector3f location) {
-		int[] chunk = new int[] {   ((int)(location.x / (WorldChunk.SIZE*Voxel.SIZE))), 
-				   					((int)(location.y / (WorldChunk.SIZE*Voxel.SIZE))), 
-				   					((int)(location.z / (WorldChunk.SIZE*Voxel.SIZE))) };
+		int[] chunk = new int[] {   ((int)(-location.x / WorldChunk.SIZE)), 
+				   					((int)(-location.y / WorldChunk.SIZE)), 
+				   					((int)(-location.z / WorldChunk.SIZE)) };
 		
 		//System.out.println(chunk[0] + " " + chunk[1] + " " + chunk[2]);
 		
-		Voxel[] player = new Voxel[Frustum.height];
+		Voxel[] player = new Voxel[1];
 		
-		for(int i = 0; i < Frustum.height; i++) {
+		for(int i = 0; i < 1; i++) {
 			player[i] = new Voxel(i,i,i);
-			player[i].setActualPosition(location.x, location.y, location.z);
+			player[i].setActualPosition(-location.x, -location.y, -location.z);
 		}
 		
 		WorldChunk foundChunk = null;
@@ -49,6 +49,7 @@ public enum World {
 		}
 		
 		if( foundChunk == null ) {
+			System.out.println("Oops");
 			return false;
 		}
 		
@@ -56,6 +57,7 @@ public enum World {
 			if( voxel.shouldRender ) {
 				for(Voxel p : player) {
 					if(voxel.hasCollidedWith(p)) {
+						System.out.println("Hit");
 						return true;
 					}
 				}	
