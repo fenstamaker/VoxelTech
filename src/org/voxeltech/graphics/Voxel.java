@@ -65,7 +65,7 @@ public class Voxel implements Serializable {
     	
     	float distance = getDistance(voxel);
     	
-    	if( distance <= Voxel.RADIUS && distance >= -Voxel.RADIUS ) {
+    	if( distance <= 2.0f*Voxel.RADIUS ) {
     		return true;
     	}
     	

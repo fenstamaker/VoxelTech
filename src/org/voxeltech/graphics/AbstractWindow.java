@@ -20,7 +20,9 @@ public abstract class AbstractWindow {
 		displayWidth = _displayWidth;
 		
 		try {
-			Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
+			//Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
+			Display.setDisplayMode(Display.getDesktopDisplayMode());
+			Display.setFullscreen(true);
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
